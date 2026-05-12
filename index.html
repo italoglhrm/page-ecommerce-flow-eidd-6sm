@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Descoberta de Sequências — Varejo e E-commerce</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07080f;
+  --surface:#111322;
+  --surface-hover:#161836;
+  --glass-border:rgba(255,255,255,.12);
+  --accent:#6d5cff;
+  --accent2:#8b7dff;
+  --cyan:#00d4aa;
+  --pink:#ff5ca1;
+  --blue:#3b82f6;
+  --orange:#ff8c42;
+  --green:#00c97b;
+  --red:#ff4d6a;
+  --text:#eef0f7;
+  --text-muted:#a0a8c4;
+  --text-dim:#7e879e;
+  --radius:14px;
+  --radius-sm:8px;
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:17px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}
+
+/* ---- SCROLL PROGRESS ---- */
+.scroll-progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--cyan),var(--pink));z-index:200;width:0;transition:none}
+
+/* ---- UTILITY ---- */
+.container{max-width:1140px;margin:0 auto;padding:0 1.5rem}
+.badge{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem 1rem;border-radius:20px;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1.8px}
+.badge-accent{background:rgba(109,92,255,.12);color:var(--accent2);border:1px solid rgba(109,92,255,.2)}
+.badge-cyan{background:rgba(0,212,170,.1);color:var(--cyan);border:1px solid rgba(0,212,170,.15)}
+.badge-pink{background:rgba(255,92,161,.1);color:var(--pink);border:1px solid rgba(255,92,161,.15)}
+.badge-blue{background:rgba(59,130,246,.1);color:var(--blue);border:1px solid rgba(59,130,246,.15)}
+.badge-orange{background:rgba(255,140,66,.1);color:var(--orange);border:1px solid rgba(255,140,66,.15)}
+.s-title{font-size:clamp(1.8rem,3.8vw,2.6rem);font-weight:750;letter-spacing:-.03em;margin-bottom:.7rem;line-height:1.2}
+.s-desc{font-size:1.05rem;color:var(--text-muted);max-width:660px;margin-bottom:2.5rem;line-height:1.75}
+
+/* ---- CARD ---- */
+.card{background:var(--surface);border:1px solid var(--glass-border);border-radius:var(--radius);transition:transform .3s var(--ease),border-color .3s var(--ease),box-shadow .3s var(--ease),background .3s var(--ease)}
+.card:hover{transform:translateY(-3px);background:var(--surface-hover)}
+
+/* ---- NAV ---- */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:.85rem 0;transition:background .35s var(--ease)}
+.nav.scrolled{background:rgba(7,8,15,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between}
+.nav-brand{font-weight:700;font-size:.95rem;color:var(--text);letter-spacing:-.01em}
+.nav-brand span{color:var(--accent2)}
+.nav-links{display:flex;gap:1.8rem}
+.nav-links a{color:var(--text-dim);text-decoration:none;font-size:.88rem;font-weight:500;letter-spacing:.02em;transition:color .2s;position:relative}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1.5px;background:var(--accent);transition:width .25s var(--ease)}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+
+/* ---- SECTIONS ---- */
+section{padding:7rem 0}
+section:first-of-type{padding-top:0}
+
+/* ---- HERO ---- */
+.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;pointer-events:none}
+.hero-bg .orb{position:absolute;border-radius:50%;filter:blur(120px);opacity:.12;transition:transform 8s ease}
+.hero-bg .orb-1{width:500px;height:500px;background:var(--accent);top:-10%;right:10%}
+.hero-bg .orb-2{width:350px;height:350px;background:var(--cyan);bottom:5%;left:5%}
+.hero-bg .orb-3{width:250px;height:250px;background:var(--pink);top:40%;left:40%}
+.hero-grid-bg{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.03) 1px,transparent 1px);background-size:32px 32px;mask-image:radial-gradient(ellipse at center,black 30%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at center,black 30%,transparent 70%)}
+.hero-content{position:relative;z-index:1;text-align:center;width:100%;padding-top:6rem}
+.hero h1{font-size:clamp(2.2rem,5.5vw,3.6rem);font-weight:850;line-height:1.08;letter-spacing:-.04em;margin:1.2rem 0 1.5rem}
+.hero h1 .hl{background:linear-gradient(135deg,var(--accent2) 0%,var(--cyan) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-size:1.15rem;color:var(--text-muted);max-width:620px;margin:0 auto 2rem;line-height:1.75}
+.hero-question{font-size:1.15rem;font-weight:600;color:var(--cyan);padding:.7rem 1.8rem;border:1.5px solid rgba(0,212,170,.25);border-radius:40px;display:inline-block;background:rgba(0,212,170,.04);margin-bottom:3rem}
+
+.hero-sequence{display:flex;align-items:center;justify-content:center;gap:.35rem;flex-wrap:wrap;margin-top:.5rem}
+.hero-seq-item{display:flex;align-items:center;gap:.55rem;padding:.7rem 1.2rem;border-radius:10px;background:var(--surface);border:1px solid var(--glass-border);font-weight:600;font-size:.95rem;opacity:0;animation:seqIn .5s ease forwards;cursor:default;transition:border-color .25s,background .25s,transform .25s}
+.hero-seq-item:hover{transform:translateY(-2px);background:var(--surface-hover)}
+.hero-seq-item:nth-child(1){animation-delay:.3s}.hero-seq-item:nth-child(1):hover{border-color:rgba(109,92,255,.35)}
+.hero-seq-item:nth-child(3){animation-delay:.55s}.hero-seq-item:nth-child(3):hover{border-color:rgba(0,212,170,.35)}
+.hero-seq-item:nth-child(5){animation-delay:.8s}.hero-seq-item:nth-child(5):hover{border-color:rgba(255,92,161,.35)}
+.hero-seq-item:nth-child(7){animation-delay:1.05s}.hero-seq-item:nth-child(7):hover{border-color:rgba(255,140,66,.35)}
+.hero-seq-arrow{color:var(--text-dim);font-size:.9rem;opacity:0;animation:seqIn .3s ease forwards}
+.hero-seq-arrow:nth-child(2){animation-delay:.42s}.hero-seq-arrow:nth-child(4){animation-delay:.67s}.hero-seq-arrow:nth-child(6){animation-delay:.92s}
+@keyframes seqIn{to{opacity:1}}
+.seq-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;transition:box-shadow .25s}
+.hero-seq-item:hover .seq-dot{box-shadow:0 0 0 4px rgba(109,92,255,.2)}
+
+/* Tooltip */
+.tip{position:relative}
+.tip::before{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(4px);background:rgba(17,19,34,.95);border:1px solid var(--glass-border);color:var(--text);font-size:.82rem;font-weight:500;padding:.45rem .8rem;border-radius:6px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s,transform .2s;z-index:10}
+.tip:hover::before{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ---- CASO ---- */
+.caso-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-bottom:2rem;counter-reset:caso}
+.caso-card{padding:1.6rem 1.3rem;text-align:center;position:relative;overflow:hidden}
+.caso-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;border-radius:2px 2px 0 0;transition:height .3s var(--ease)}
+.caso-card:hover::before{height:4px}
+.caso-card:nth-child(1)::before{background:var(--accent)}.caso-card:nth-child(1):hover{border-color:rgba(109,92,255,.25);box-shadow:0 8px 30px rgba(109,92,255,.08)}
+.caso-card:nth-child(2)::before{background:var(--cyan)}.caso-card:nth-child(2):hover{border-color:rgba(0,212,170,.25);box-shadow:0 8px 30px rgba(0,212,170,.08)}
+.caso-card:nth-child(3)::before{background:var(--pink)}.caso-card:nth-child(3):hover{border-color:rgba(255,92,161,.25);box-shadow:0 8px 30px rgba(255,92,161,.08)}
+.caso-card:nth-child(4)::before{background:var(--orange)}.caso-card:nth-child(4):hover{border-color:rgba(255,140,66,.25);box-shadow:0 8px 30px rgba(255,140,66,.08)}
+.caso-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;margin:0 auto .8rem;color:#fff;font-variant-numeric:tabular-nums;transition:transform .3s var(--ease)}
+.caso-card:hover .caso-num{transform:scale(1.12)}
+.caso-card:nth-child(1) .caso-num{background:var(--accent)}.caso-card:nth-child(2) .caso-num{background:var(--cyan)}.caso-card:nth-child(3) .caso-num{background:var(--pink)}.caso-card:nth-child(4) .caso-num{background:var(--orange)}
+.caso-icon-wrap{margin:0 auto .8rem;width:52px;height:52px;display:flex;align-items:center;justify-content:center;transition:transform .3s var(--ease)}
+.caso-card:hover .caso-icon-wrap{transform:scale(1.1)}
+.caso-card h3{font-size:1.05rem;font-weight:650;margin-bottom:.4rem}
+.caso-card p{font-size:.92rem;color:var(--text-muted);line-height:1.65}
+.caso-callout{padding:1.3rem 1.6rem;border-left:3px solid var(--cyan);background:rgba(0,212,170,.04);border-radius:0 var(--radius) var(--radius) 0}
+.caso-callout p{font-size:1rem;line-height:1.75}
+.caso-callout strong{color:var(--cyan)}
+
+/* ---- DADOS ---- */
+.data-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2.5rem}
+.dtag{padding:.5rem 1rem;border-radius:var(--radius-sm);font-size:.9rem;font-weight:500;background:var(--surface);border:1px solid var(--glass-border);display:flex;align-items:center;gap:.4rem;color:var(--text-muted);cursor:default;transition:all .25s var(--ease)}
+.dtag:hover{border-color:rgba(109,92,255,.3);color:var(--text);background:var(--surface-hover);transform:translateY(-1px)}
+.dtag svg{width:14px;height:14px;opacity:.6;transition:opacity .2s}
+.dtag:hover svg{opacity:1}
+
+.clients-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:1.2rem}
+.client-card{padding:0;overflow:hidden}
+.client-header{display:flex;align-items:center;gap:.7rem;padding:1.1rem 1.3rem;border-bottom:1px solid var(--glass-border);transition:background .25s}
+.client-card:hover .client-header{background:rgba(255,255,255,.015)}
+.client-avatar{width:38px;height:38px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.72rem;color:#fff;transition:transform .3s var(--ease);border:2px solid var(--glass-border)}
+.client-avatar img{width:100%;height:100%;object-fit:cover}
+.client-card:hover .client-avatar{transform:scale(1.1)}
+.client-card:nth-child(1) .client-avatar{background:linear-gradient(135deg,var(--accent),var(--pink))}
+.client-card:nth-child(2) .client-avatar{background:linear-gradient(135deg,var(--cyan),var(--blue))}
+.client-card:nth-child(3) .client-avatar{background:linear-gradient(135deg,var(--orange),var(--pink))}
+.client-name{font-weight:650;font-size:.98rem}
+.client-id{font-size:.82rem;color:var(--text-dim)}
+.client-events{padding:.5rem 1.3rem 1rem}
+.evt{display:flex;align-items:center;gap:.7rem;padding:.55rem .4rem;position:relative;border-radius:6px;transition:background .2s}
+.evt:hover{background:rgba(255,255,255,.025)}
+.evt:not(:last-child)::after{content:'';position:absolute;left:calc(18px + .4rem);top:36px;width:1.5px;height:calc(100% - 20px);background:var(--glass-border)}
+.evt-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;position:relative;z-index:1;box-shadow:0 0 0 3px var(--surface);transition:transform .2s,box-shadow .3s}
+.evt:hover .evt-dot{transform:scale(1.4);box-shadow:0 0 0 3px var(--surface-hover)}
+.evt-date{font-size:.85rem;color:var(--text-dim);font-weight:600;min-width:38px;font-variant-numeric:tabular-nums}
+.evt-prod{font-size:.95rem;font-weight:500;transition:color .2s}
+.evt:hover .evt-prod{color:#fff}
+.evt-val{margin-left:auto;font-size:.85rem;color:var(--text-muted);font-variant-numeric:tabular-nums}
+
+/* ---- KDD FLOW ---- */
+.kdd-timeline{display:flex;flex-direction:column;gap:0;position:relative}
+.kdd-step{display:grid;grid-template-columns:56px 1fr;gap:1.5rem;align-items:start;padding:1.5rem 0;position:relative}
+.kdd-step:not(:last-child)::before{content:'';position:absolute;left:27px;width:2px;top:calc(1.5rem + 56px);bottom:calc(-1.5rem);background:var(--glass-border);opacity:.35;z-index:0}
+.kdd-step:nth-child(1)::before{background:linear-gradient(180deg,var(--accent),var(--blue))!important}
+.kdd-step:nth-child(2)::before{background:linear-gradient(180deg,var(--blue),var(--cyan))!important}
+.kdd-step:nth-child(3)::before{background:linear-gradient(180deg,var(--cyan),var(--pink))!important}
+.kdd-step:nth-child(4)::before{background:linear-gradient(180deg,var(--pink),var(--orange))!important}
+.kdd-marker{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;z-index:2;cursor:pointer;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.kdd-marker:hover{transform:scale(1.1)}
+.kdd-step[data-phase="selecao"] .kdd-marker{background:linear-gradient(135deg,rgba(109,92,255,.15),rgba(109,92,255,.05));border:1.5px solid rgba(109,92,255,.3)}
+.kdd-step[data-phase="selecao"] .kdd-marker:hover{box-shadow:0 0 20px rgba(109,92,255,.15)}
+.kdd-step[data-phase="preprocessamento"] .kdd-marker{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(59,130,246,.05));border:1.5px solid rgba(59,130,246,.3)}
+.kdd-step[data-phase="preprocessamento"] .kdd-marker:hover{box-shadow:0 0 20px rgba(59,130,246,.15)}
+.kdd-step[data-phase="transformacao"] .kdd-marker{background:linear-gradient(135deg,rgba(0,212,170,.15),rgba(0,212,170,.05));border:1.5px solid rgba(0,212,170,.3)}
+.kdd-step[data-phase="transformacao"] .kdd-marker:hover{box-shadow:0 0 20px rgba(0,212,170,.15)}
+.kdd-step[data-phase="mineracao"] .kdd-marker{background:linear-gradient(135deg,rgba(255,92,161,.15),rgba(255,92,161,.05));border:1.5px solid rgba(255,92,161,.3)}
+.kdd-step[data-phase="mineracao"] .kdd-marker:hover{box-shadow:0 0 20px rgba(255,92,161,.15)}
+.kdd-step[data-phase="avaliacao"] .kdd-marker{background:linear-gradient(135deg,rgba(255,140,66,.15),rgba(255,140,66,.05));border:1.5px solid rgba(255,140,66,.3)}
+.kdd-step[data-phase="avaliacao"] .kdd-marker:hover{box-shadow:0 0 20px rgba(255,140,66,.15)}
+
+.kdd-content{border-radius:var(--radius);background:var(--surface);border:1px solid var(--glass-border);overflow:hidden;transition:border-color .3s var(--ease),box-shadow .3s var(--ease)}
+.kdd-content-header{padding:1.3rem 1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background .25s;user-select:none}
+.kdd-content-header:hover{background:rgba(255,255,255,.015)}
+.kdd-content-header .kdd-toggle{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;transition:transform .35s var(--ease),background .25s;flex-shrink:0}
+.kdd-content-header:hover .kdd-toggle{background:rgba(255,255,255,.07)}
+.kdd-step.open .kdd-content-header .kdd-toggle{transform:rotate(180deg)}
+.kdd-phase{font-size:.8rem;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:.2rem}
+.kdd-step[data-phase="selecao"] .kdd-phase{color:var(--accent2)}
+.kdd-step[data-phase="preprocessamento"] .kdd-phase{color:var(--blue)}
+.kdd-step[data-phase="transformacao"] .kdd-phase{color:var(--cyan)}
+.kdd-step[data-phase="mineracao"] .kdd-phase{color:var(--pink)}
+.kdd-step[data-phase="avaliacao"] .kdd-phase{color:var(--orange)}
+.kdd-title{font-size:1.12rem;font-weight:700}
+.kdd-body{max-height:0;overflow:hidden;transition:max-height .45s var(--ease)}
+.kdd-step.open .kdd-body{max-height:600px}
+.kdd-body-inner{padding:0 1.5rem 1.5rem}
+.kdd-desc{font-size:.95rem;color:var(--text-muted);line-height:1.75;margin-bottom:1rem}
+.kdd-visual{border-radius:var(--radius-sm);background:rgba(255,255,255,.02);border:1px solid var(--glass-border);padding:1rem;overflow-x:auto}
+.kdd-step.open .kdd-content{border-color:rgba(255,255,255,.12)}
+
+/* Mini table */
+.mini-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.mini-table th{text-align:left;padding:.45rem .7rem;color:var(--text-muted);font-weight:600;border-bottom:1px solid var(--glass-border);text-transform:uppercase;letter-spacing:.5px;font-size:.78rem}
+.mini-table td{padding:.45rem .7rem;border-bottom:1px solid rgba(255,255,255,.05);font-variant-numeric:tabular-nums;transition:background .15s}
+.mini-table tr:last-child td{border:none}
+.mini-table tbody tr:hover td{background:rgba(255,255,255,.02)}
+.mini-table .hl-row{background:rgba(255,77,106,.06)}
+.mini-table .hl-row:hover td{background:rgba(255,77,106,.1) !important}
+.mini-table .strike{text-decoration:line-through;color:var(--text-dim);opacity:.5}
+.mini-table .null-val{color:var(--red);font-style:italic}
+
+.ftag{padding:.3rem .7rem;border-radius:5px;font-size:.84rem;font-weight:500;transition:transform .2s;cursor:default}
+.ftag:hover{transform:scale(1.05)}
+.seq-result{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.seq-node{padding:.5rem .9rem;border-radius:var(--radius-sm);font-weight:600;font-size:.92rem;display:flex;align-items:center;gap:.4rem;transition:transform .2s;cursor:default}
+.seq-node:hover{transform:scale(1.06)}
+.seq-connector{display:flex;align-items:center;gap:.15rem;color:var(--text-dim)}
+.seq-connector svg{width:20px;height:20px}
+
+/* ---- DISCOVERY ---- */
+.disc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.disc-card{padding:1.5rem 1.2rem;text-align:center;position:relative}
+.disc-card:not(:last-child)::after{content:'';position:absolute;top:50%;right:calc(-1rem);width:1rem;height:2px;z-index:2;opacity:.35;transition:opacity .3s}
+.disc-card:hover::after{opacity:.7}
+.disc-card:nth-child(1)::after{background:var(--accent)}.disc-card:nth-child(1):hover{border-color:rgba(109,92,255,.3);box-shadow:0 8px 30px rgba(109,92,255,.08)}
+.disc-card:nth-child(2)::after{background:var(--cyan)}.disc-card:nth-child(2):hover{border-color:rgba(0,212,170,.3);box-shadow:0 8px 30px rgba(0,212,170,.08)}
+.disc-card:nth-child(3)::after{background:var(--pink)}.disc-card:nth-child(3):hover{border-color:rgba(255,92,161,.3);box-shadow:0 8px 30px rgba(255,92,161,.08)}
+.disc-card:nth-child(4):hover{border-color:rgba(255,140,66,.3);box-shadow:0 8px 30px rgba(255,140,66,.08)}
+.disc-icon-wrap{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto .8rem;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.disc-card:hover .disc-icon-wrap{transform:scale(1.08)}
+.disc-card:nth-child(1):hover .disc-icon-wrap{box-shadow:0 0 20px rgba(109,92,255,.2),0 0 40px rgba(109,92,255,.08)}
+.disc-card:nth-child(2):hover .disc-icon-wrap{box-shadow:0 0 20px rgba(0,212,170,.2),0 0 40px rgba(0,212,170,.08)}
+.disc-card:nth-child(3):hover .disc-icon-wrap{box-shadow:0 0 20px rgba(255,92,161,.2),0 0 40px rgba(255,92,161,.08)}
+.disc-card:nth-child(4):hover .disc-icon-wrap{box-shadow:0 0 20px rgba(255,140,66,.2),0 0 40px rgba(255,140,66,.08)}
+.disc-card:nth-child(1) .disc-icon-wrap{background:rgba(109,92,255,.1);border:1px solid rgba(109,92,255,.2)}
+.disc-card:nth-child(2) .disc-icon-wrap{background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.2)}
+.disc-card:nth-child(3) .disc-icon-wrap{background:rgba(255,92,161,.1);border:1px solid rgba(255,92,161,.2)}
+.disc-card:nth-child(4) .disc-icon-wrap{background:rgba(255,140,66,.1);border:1px solid rgba(255,140,66,.2)}
+.disc-name{font-size:1.05rem;font-weight:700;margin-bottom:.3rem}
+.disc-role{font-size:.9rem;color:var(--text-muted);line-height:1.55;margin-bottom:.6rem}
+.disc-prob{font-size:.82rem;font-weight:650;padding:.25rem .7rem;border-radius:5px;display:inline-block;margin-bottom:.6rem}
+/* Probability bar */
+.disc-bar-track{width:80%;height:4px;border-radius:2px;background:rgba(255,255,255,.06);margin:0 auto;overflow:hidden}
+.disc-bar-fill{height:100%;border-radius:2px;width:0;transition:width 1.2s var(--ease)}
+.disc-card.vis .disc-bar-fill{width:var(--prob-w)}
+
+.disc-insight{padding:1.3rem 1.6rem;border:1px dashed rgba(109,92,255,.2);border-radius:var(--radius);background:rgba(109,92,255,.03);text-align:center}
+.disc-insight p{font-size:1rem;color:var(--text-muted);line-height:1.75}
+.disc-insight strong{color:var(--text)}
+
+/* ---- ACTIONS ---- */
+.actions-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem}
+.act-card{padding:1.5rem;display:flex;gap:1.2rem;align-items:start}
+.act-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.act-card:hover .act-icon{transform:scale(1.08)}
+.act-card:nth-child(1) .act-icon{background:rgba(109,92,255,.1);border:1px solid rgba(109,92,255,.2)}
+.act-card:nth-child(1):hover{border-color:rgba(109,92,255,.25);box-shadow:0 8px 30px rgba(109,92,255,.06)}
+.act-card:nth-child(1):hover .act-icon{box-shadow:0 0 18px rgba(109,92,255,.2),0 0 36px rgba(109,92,255,.08)}
+.act-card:nth-child(2) .act-icon{background:rgba(255,92,161,.1);border:1px solid rgba(255,92,161,.2)}
+.act-card:nth-child(2):hover{border-color:rgba(255,92,161,.25);box-shadow:0 8px 30px rgba(255,92,161,.06)}
+.act-card:nth-child(2):hover .act-icon{box-shadow:0 0 18px rgba(255,92,161,.2),0 0 36px rgba(255,92,161,.08)}
+.act-card:nth-child(3) .act-icon{background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.2)}
+.act-card:nth-child(3):hover{border-color:rgba(0,212,170,.25);box-shadow:0 8px 30px rgba(0,212,170,.06)}
+.act-card:nth-child(3):hover .act-icon{box-shadow:0 0 18px rgba(0,212,170,.2),0 0 36px rgba(0,212,170,.08)}
+.act-card:nth-child(4) .act-icon{background:rgba(255,140,66,.1);border:1px solid rgba(255,140,66,.2)}
+.act-card:nth-child(4):hover{border-color:rgba(255,140,66,.25);box-shadow:0 8px 30px rgba(255,140,66,.06)}
+.act-card:nth-child(4):hover .act-icon{box-shadow:0 0 18px rgba(255,140,66,.2),0 0 36px rgba(255,140,66,.08)}
+.act-body h3{font-size:1.02rem;font-weight:650;margin-bottom:.3rem}
+.act-body p{font-size:.92rem;color:var(--text-muted);line-height:1.65}
+.act-example{margin-top:.6rem;padding:.65rem .9rem;border-radius:var(--radius-sm);background:rgba(255,255,255,.02);border:1px solid var(--glass-border);font-size:.88rem;color:var(--text-muted);line-height:1.65;transition:border-color .25s}
+.act-card:hover .act-example{border-color:rgba(255,255,255,.12)}
+.act-example strong{color:var(--cyan)}
+
+/* ---- SIMULATION ---- */
+.sim-layout{display:grid;grid-template-columns:260px 1fr;gap:1.5rem;align-items:start}
+.sim-sidebar{display:flex;flex-direction:column;gap:.6rem}
+.sim-btn{padding:.9rem 1rem;border:1.5px solid var(--glass-border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-size:.95rem;cursor:pointer;text-align:left;transition:all .3s var(--ease);display:flex;align-items:center;gap:.65rem;font-family:inherit}
+.sim-btn:hover{border-color:rgba(109,92,255,.3);background:var(--surface-hover);transform:translateX(3px)}
+.sim-btn.active{border-color:var(--accent);background:rgba(109,92,255,.08);transform:translateX(5px)}
+.sim-btn .sb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:box-shadow .2s,transform .2s}
+.sim-btn.active .sb-dot{box-shadow:0 0 0 3px rgba(109,92,255,.3);transform:scale(1.3)}
+.sim-btn .sb-label{font-weight:500}
+
+.sim-main{min-height:480px}
+.sim-empty{display:flex;align-items:center;justify-content:center;min-height:480px;text-align:center;color:var(--text-dim);flex-direction:column;gap:.8rem}
+.sim-empty svg{opacity:.3}
+.sim-empty p{font-size:1rem}
+
+/* Sim timeline */
+.sim-timeline{position:relative;padding:1.5rem}
+.sim-timeline::before{content:'';position:absolute;left:var(--track-x,35px);top:var(--track-top,0);width:2px;height:var(--track-h,0);background:var(--glass-border);border-radius:1px;z-index:0}
+.sim-timeline-progress{position:absolute;left:var(--track-x,35px);top:var(--track-top,0);width:2px;border-radius:1px;height:0;transition:height 1.6s var(--ease);z-index:0}
+
+.sim-s{display:grid;grid-template-columns:40px 1fr;gap:1rem;padding:.8rem 0;opacity:0;transform:translateY(10px);position:relative;z-index:1}
+.sim-s.show{opacity:1;transform:translateY(0);transition:opacity .35s var(--ease),transform .35s var(--ease)}
+.sim-s-marker{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;color:#fff;position:relative;z-index:2;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.sim-s.show .sim-s-marker{box-shadow:0 0 12px rgba(0,0,0,.3)}
+.sim-s-content{padding:.9rem 1.1rem;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--glass-border);transition:border-color .3s}
+.sim-s.show .sim-s-content:hover{border-color:rgba(255,255,255,.15);background:var(--surface-hover)}
+.sim-s-content h4{font-size:.95rem;font-weight:650;margin-bottom:.25rem;display:flex;align-items:center;gap:.5rem}
+.sim-s-content p{font-size:.9rem;color:var(--text-muted);line-height:1.65}
+.sim-s-content .sim-hl{margin-top:.5rem;padding:.5rem .8rem;border-radius:6px;font-size:.88rem;font-weight:600;display:inline-flex;align-items:center;gap:.4rem;background:rgba(0,212,170,.08);color:var(--cyan);border:1px solid rgba(0,212,170,.15)}
+
+.sim-result-card{margin-top:1.2rem;padding:1.3rem;border-radius:var(--radius);background:linear-gradient(135deg,rgba(109,92,255,.05),rgba(0,212,170,.03));border:1px solid rgba(109,92,255,.12);opacity:0;transform:translateY(10px)}
+.sim-result-card.show{opacity:1;transform:translateY(0);transition:all .4s var(--ease)}
+.sim-result-header{font-size:.8rem;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;color:var(--text-muted);margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem}
+.sim-result-header::before{content:'';display:inline-block;width:16px;height:2px;border-radius:1px;background:var(--accent)}
+.sim-result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem}
+.sim-r-metric{padding:.7rem;border-radius:var(--radius-sm);background:rgba(255,255,255,.02);border:1px solid var(--glass-border);text-align:center;transition:border-color .25s,background .25s}
+.sim-r-metric:hover{border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.03)}
+.sim-r-label{font-size:.78rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:.25rem;font-weight:600}
+.sim-r-value{font-size:1.3rem;font-weight:800}
+.sim-r-sub{font-size:.88rem;color:var(--text-muted);margin-top:.15rem}
+
+/* ---- KPIs ---- */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-bottom:1.5rem}
+.kpi-card{padding:1.6rem;text-align:center;position:relative;overflow:hidden}
+.kpi-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s;pointer-events:none;border-radius:var(--radius)}
+.kpi-card:nth-child(1)::before{background:radial-gradient(circle at 50% 0%,rgba(0,201,123,.06),transparent 70%)}
+.kpi-card:nth-child(2)::before{background:radial-gradient(circle at 50% 0%,rgba(0,212,170,.06),transparent 70%)}
+.kpi-card:nth-child(3)::before{background:radial-gradient(circle at 50% 0%,rgba(255,92,161,.06),transparent 70%)}
+.kpi-card:nth-child(4)::before{background:radial-gradient(circle at 50% 0%,rgba(139,125,255,.06),transparent 70%)}
+.kpi-card:hover::before{opacity:1}
+.kpi-card:nth-child(1):hover{border-color:rgba(0,201,123,.25)}.kpi-card:nth-child(2):hover{border-color:rgba(0,212,170,.25)}.kpi-card:nth-child(3):hover{border-color:rgba(255,92,161,.25)}.kpi-card:nth-child(4):hover{border-color:rgba(139,125,255,.25)}
+.kpi-bar{width:40px;height:3px;border-radius:2px;margin:0 auto .8rem}
+.kpi-card:nth-child(1) .kpi-bar{background:var(--green)}.kpi-card:nth-child(2) .kpi-bar{background:var(--cyan)}.kpi-card:nth-child(3) .kpi-bar{background:var(--pink)}.kpi-card:nth-child(4) .kpi-bar{background:var(--accent2)}
+.kpi-val{font-size:2rem;font-weight:850;letter-spacing:-.02em;margin-bottom:.3rem;font-variant-numeric:tabular-nums;transition:transform .3s var(--ease)}
+.kpi-card:hover .kpi-val{transform:scale(1.08)}
+.kpi-card:nth-child(1) .kpi-val{color:var(--green)}.kpi-card:nth-child(2) .kpi-val{color:var(--cyan)}.kpi-card:nth-child(3) .kpi-val{color:var(--pink)}.kpi-card:nth-child(4) .kpi-val{color:var(--accent2)}
+.kpi-label{font-size:.95rem;font-weight:600;margin-bottom:.2rem}
+.kpi-sub{font-size:.82rem;color:var(--text-muted)}
+.kpi-note{text-align:center;font-size:.82rem;color:var(--text-muted);font-style:italic}
+
+/* ---- FINAL FLOW ---- */
+/* ---- CONCLUSION ---- */
+.conclusion{position:relative}
+.conclusion-layout{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:stretch;margin-bottom:2rem}
+.conclusion-flow{display:flex;flex-direction:column;gap:0;position:relative;padding-left:36px}
+.conclusion-flow::before{content:'';position:absolute;left:23px;top:28px;bottom:28px;width:2px;background:linear-gradient(180deg,var(--accent),var(--blue),var(--cyan),var(--green),var(--pink),var(--orange),var(--accent2));opacity:.18;border-radius:1px}
+.cf-step{display:flex;align-items:center;gap:1.2rem;padding:1rem 0;position:relative}
+.cf-marker{width:48px;height:48px;min-width:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--glass-border);background:var(--surface);position:relative;z-index:2;transition:all .35s var(--ease)}
+.cf-step:hover .cf-marker{transform:scale(1.1)}
+.cf-num{position:absolute;top:-4px;right:-4px;width:18px;height:18px;border-radius:50%;font-size:.58rem;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;z-index:3}
+.cf-content{flex:1}
+.cf-label{font-size:1.02rem;font-weight:700;margin-bottom:.15rem}
+.cf-desc{font-size:.88rem;color:var(--text-muted);line-height:1.5}
+.conclusion-right{display:flex;flex-direction:column;gap:1.2rem;justify-content:space-between}
+.conclusion-pillars{display:flex;flex-direction:column;gap:1.2rem;flex:1}
+.cpillar{padding:1.5rem;text-align:center;position:relative;overflow:hidden;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.cpillar::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s;pointer-events:none;border-radius:var(--radius)}
+.cpillar:nth-child(1)::before{background:radial-gradient(circle at 50% 0%,rgba(109,92,255,.07),transparent 70%)}
+.cpillar:nth-child(2)::before{background:radial-gradient(circle at 50% 0%,rgba(0,212,170,.07),transparent 70%)}
+.cpillar:nth-child(3)::before{background:radial-gradient(circle at 50% 0%,rgba(255,140,66,.07),transparent 70%)}
+.cpillar:hover::before{opacity:1}
+.cpillar:nth-child(1):hover{border-color:rgba(109,92,255,.25)}
+.cpillar:nth-child(2):hover{border-color:rgba(0,212,170,.25)}
+.cpillar:nth-child(3):hover{border-color:rgba(255,140,66,.25)}
+.cpillar-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .8rem;border:1.5px solid var(--glass-border)}
+.cpillar:nth-child(1) .cpillar-icon{color:var(--accent);border-color:rgba(109,92,255,.25);background:rgba(109,92,255,.06)}
+.cpillar:nth-child(2) .cpillar-icon{color:var(--cyan);border-color:rgba(0,212,170,.25);background:rgba(0,212,170,.06)}
+.cpillar:nth-child(3) .cpillar-icon{color:var(--orange);border-color:rgba(255,140,66,.25);background:rgba(255,140,66,.06)}
+.cpillar-title{font-size:1rem;font-weight:700;margin-bottom:.3rem}
+.cpillar-desc{font-size:.88rem;color:var(--text-muted);line-height:1.6}
+.conclusion-tagline{text-align:center;padding:1.5rem 2rem;border-radius:var(--radius);background:linear-gradient(135deg,rgba(109,92,255,.04),rgba(0,212,170,.03));border:1px solid var(--glass-border);transition:border-color .3s}
+.conclusion-tagline:hover{border-color:rgba(109,92,255,.2)}
+.conclusion-tagline p{font-size:1.02rem;color:var(--text-muted);margin:0;line-height:1.75}
+.conclusion-tagline strong{color:var(--text);font-weight:700}
+@media(max-width:768px){.conclusion-layout{grid-template-columns:1fr}.conclusion-pillars{flex-direction:row;gap:1rem}.conclusion-pillars .cpillar{flex:1}}
+@media(max-width:600px){.conclusion-pillars{flex-direction:column}}
+
+.footer{text-align:center;padding:3rem 0;border-top:1px solid var(--glass-border)}
+.footer p{font-size:.9rem;color:var(--text-muted)}
+.footer .team{color:var(--accent2);font-weight:600;margin-top:.3rem;display:block}
+
+/* ---- REVEAL ---- */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .65s ease,transform .65s ease}
+.rv.vis{opacity:1;transform:translateY(0)}
+/* Stagger children */
+.stagger>.rv:nth-child(1){transition-delay:.05s}.stagger>.rv:nth-child(2){transition-delay:.1s}.stagger>.rv:nth-child(3){transition-delay:.15s}.stagger>.rv:nth-child(4){transition-delay:.2s}
+
+/* ---- RESPONSIVE ---- */
+@media(max-width:900px){
+  .caso-steps{grid-template-columns:repeat(2,1fr)}
+  .disc-grid{grid-template-columns:repeat(2,1fr)}
+  .disc-card::after{display:none}
+  .actions-grid{grid-template-columns:1fr}
+  .sim-layout{grid-template-columns:1fr}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .nav-links{display:none}
+}
+@media(max-width:600px){
+  .caso-steps,.disc-grid,.kpi-grid{grid-template-columns:1fr}
+  .sim-result-grid{grid-template-columns:1fr}
+
+}
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<nav class="nav" id="nav">
+  <div class="container nav-inner">
+    <div class="nav-brand">EIDD <span>/ Sequências</span></div>
+    <div class="nav-links" id="navLinks">
+      <a href="#caso" data-section="caso">Caso</a>
+      <a href="#dados" data-section="dados">Dados</a>
+      <a href="#kdd" data-section="kdd">Fluxo KDD</a>
+      <a href="#descoberta" data-section="descoberta">Sequência</a>
+      <a href="#acoes" data-section="acoes">Ações</a>
+      <a href="#simulacao" data-section="simulacao">Simulação</a>
+      <a href="#kpis" data-section="kpis">KPIs</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero" id="hero">
+  <div class="hero-bg"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div><div class="hero-grid-bg"></div></div>
+  <div class="container hero-content">
+    <span class="badge badge-accent">Caso Real — Varejo e E-commerce</span>
+    <h1>Descoberta de Sequências<br>no <span class="hl">Varejo Digital</span></h1>
+    <p class="hero-sub">A técnica de mineração de dados que identifica padrões temporais de compra e transforma o histórico de transações em previsões acionáveis.</p>
+    <div class="hero-question">"O que o cliente tende a comprar depois?"</div>
+    <div class="hero-sequence" id="heroSeq"></div>
+  </div>
+</section>
+
+<section id="caso">
+  <div class="container">
+    <span class="badge badge-accent rv">O Cenário</span>
+    <h2 class="s-title rv">O Caso de Negócio</h2>
+    <p class="s-desc rv">Um padrão que se repete entre diferentes clientes ao longo do tempo e que revela oportunidades estratégicas para o varejo.</p>
+    <div class="caso-steps stagger" id="casoSteps"></div>
+    <div class="caso-callout card rv">
+      <p><strong>A ordem dos eventos importa.</strong> Diferente da associação, que busca itens comprados juntos sem considerar tempo, aqui analisamos <em>o que acontece depois</em>, em qual sequência e em qual intervalo temporal. Esse padrão se repete entre diversos clientes independentes.</p>
+    </div>
+  </div>
+</section>
+
+<section id="dados">
+  <div class="container">
+    <span class="badge badge-cyan rv">Inputs</span>
+    <h2 class="s-title rv">Entrada dos Dados</h2>
+    <p class="s-desc rv">As informações que alimentam o processo de descoberta de sequências no e-commerce.</p>
+    <div class="data-tags rv" id="dataTags"></div>
+    <div class="clients-grid stagger" id="clientsGrid"></div>
+  </div>
+</section>
+
+<section id="kdd">
+  <div class="container">
+    <span class="badge badge-pink rv">Processo KDD</span>
+    <h2 class="s-title rv">Fluxo de Dados</h2>
+    <p class="s-desc rv">Clique em cada etapa para ver como os dados brutos de compra são transformados em conhecimento acionável.</p>
+    <div class="kdd-timeline" id="kddTimeline"></div>
+  </div>
+</section>
+
+<section id="descoberta">
+  <div class="container">
+    <span class="badge badge-cyan rv">Resultado</span>
+    <h2 class="s-title rv">A Sequência Descoberta</h2>
+    <p class="s-desc rv">O padrão temporal identificado após a análise dos dados de múltiplos clientes.</p>
+    <div class="disc-grid stagger" id="discGrid"></div>
+    <div class="disc-insight card rv">
+      <p><strong>Quando muitos clientes seguem uma ordem parecida de compra, o sistema identifica uma sequência frequente.</strong> Essa sequência é usada para prever o próximo produto mais provável, permitindo que o negócio aja de forma proativa.</p>
+    </div>
+  </div>
+</section>
+
+<section id="acoes">
+  <div class="container">
+    <span class="badge badge-orange rv">Impacto</span>
+    <h2 class="s-title rv">Ações Geradas</h2>
+    <p class="s-desc rv">Como o varejo transforma a sequência descoberta em decisões estratégicas concretas.</p>
+    <div class="actions-grid stagger" id="actionsGrid"></div>
+  </div>
+</section>
+
+<section id="simulacao">
+  <div class="container">
+    <span class="badge badge-blue rv">Interativo</span>
+    <h2 class="s-title rv">Simulação</h2>
+    <p class="s-desc rv">Selecione a última compra do cliente e acompanhe, passo a passo, como o sistema chega à recomendação.</p>
+    <div class="sim-layout rv">
+      <div class="sim-sidebar" id="simSidebar"></div>
+      <div class="sim-main card" id="simMain">
+        <div class="sim-empty">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          <p>Selecione uma etapa ao lado para ver<br>o processo completo de previsão</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="kpis">
+  <div class="container">
+    <span class="badge badge-cyan rv">Resultados</span>
+    <h2 class="s-title rv">Indicadores de Negócio</h2>
+    <p class="s-desc rv">Impacto demonstrativo da aplicação de descoberta de sequências no varejo.</p>
+    <div class="kpi-grid stagger" id="kpiGrid"></div>
+    <p class="kpi-note rv">* Valores demonstrativos para fins acadêmicos.</p>
+  </div>
+</section>
+
+<section id="resumo">
+  <div class="container">
+    <span class="badge badge-pink rv">Conclusão</span>
+    <h2 class="s-title rv">Da Compra à Decisão Inteligente</h2>
+    <p class="s-desc rv">O caminho completo dos dados — da compra à oferta personalizada.</p>
+    <div class="conclusion rv" id="conclusionBlock"></div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <p>Engenharia Inteligente de Dados — Seminário de Tarefas de Data Mining</p>
+    <span class="team">Emanuel Bruno, Ítalo Guilherme, Matheus Pimentel e Ylan</span>
+  </div>
+</footer>
+
+<script>
+const ICO={
+  smartphone:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6d5cff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg>`,
+  case:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00d4aa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/><rect x="3" y="3" width="18" height="18" rx="3" stroke-opacity=".3"/></svg>`,
+  film:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff5ca1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="1"/><line x1="6" y1="8" x2="18" y2="8" stroke-dasharray="2 2"/></svg>`,
+  battery:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff8c42" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="18" height="12" rx="2"/><line x1="23" y1="10" x2="23" y2="14"/><line x1="7" y1="10" x2="7" y2="14"/><line x1="11" y1="10" x2="11" y2="14"/></svg>`,
+  target:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6d5cff" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
+  mail:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff5ca1" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4l-10 8L2 4"/></svg>`,
+  box:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d4aa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>`,
+  chart:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff8c42" stroke-width="1.5" stroke-linecap="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>`,
+  arrowR:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`,
+  chevDown:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>`,
+  db:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4.03 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg>`,
+  filter:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>`,
+  shuffle:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>`,
+  search:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+  check:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+  cart:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>`,
+  spark:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`,
+};
+
+const PRODUCTS=[
+  {name:'Smartphone',icon:ICO.smartphone,color:'#6d5cff',role:'Produto principal que inicia a jornada',prob:null,probW:'100%'},
+  {name:'Capinha',icon:ICO.case,color:'#00d4aa',role:'Primeiro acessório provável após a compra',prob:'72%',probW:'72%'},
+  {name:'Película',icon:ICO.film,color:'#ff5ca1',role:'Item complementar de proteção',prob:'64%',probW:'64%'},
+  {name:'Carregador Portátil',icon:ICO.battery,color:'#ff8c42',role:'Produto de uso contínuo e autonomia',prob:'48%',probW:'48%'}
+];
+const CLIENTS=[
+  {id:'1024',name:'Ana Silva',initials:'AS',avatar:'https://i.pravatar.cc/150?img=5',events:[{date:'02/01',product:'Smartphone',value:'R$ 2.499',color:'#6d5cff'},{date:'08/01',product:'Capinha',value:'R$ 79',color:'#00d4aa'},{date:'10/01',product:'Película',value:'R$ 39',color:'#ff5ca1'},{date:'18/01',product:'Carregador Portátil',value:'R$ 149',color:'#ff8c42'}]},
+  {id:'2048',name:'Carlos Mendes',initials:'CM',avatar:'https://i.pravatar.cc/150?img=12',events:[{date:'04/01',product:'Smartphone',value:'R$ 3.199',color:'#6d5cff'},{date:'06/01',product:'Capinha',value:'R$ 59',color:'#00d4aa'},{date:'09/01',product:'Película',value:'R$ 45',color:'#ff5ca1'}]},
+  {id:'3099',name:'Julia Rocha',initials:'JR',avatar:'https://i.pravatar.cc/150?img=9',events:[{date:'05/01',product:'Smartphone',value:'R$ 1.899',color:'#6d5cff'},{date:'12/01',product:'Capinha',value:'R$ 89',color:'#00d4aa'},{date:'14/01',product:'Película',value:'R$ 35',color:'#ff5ca1'},{date:'22/01',product:'Carregador Portátil',value:'R$ 129',color:'#ff8c42'}]}
+];
+const DATA_FIELDS=['Histórico de compras','ID do cliente','Produto comprado','Categoria','Data e hora','Canal de venda','Valor','Frequência de recompra'];
+
+const KDD_STEPS=[
+  {phase:'selecao',label:'Seleção',title:'1. Seleção dos Dados',desc:'O e-commerce possui milhões de registros. Selecionamos apenas transações de smartphones e acessórios dos últimos 6 meses, focando em clientes com pelo menos 2 compras na categoria.',icon:ICO.db,
+  visual:`<p style="font-size:.88rem;color:var(--text-muted);margin-bottom:.6rem">Base original: 2.4M transações → Filtro: categoria "Smartphones + Acessórios", últimos 6 meses</p>
+  <table class="mini-table"><thead><tr><th>ID</th><th>Cliente</th><th>Produto</th><th>Data</th><th>Valor</th><th>Canal</th></tr></thead><tbody>
+  <tr><td>TX-8821</td><td>#1024</td><td>Smartphone X12</td><td>02/01</td><td>R$ 2.499</td><td>App</td></tr>
+  <tr><td>TX-8834</td><td>#1024</td><td>Capinha Premium</td><td>08/01</td><td>R$ 79</td><td>Site</td></tr>
+  <tr><td>TX-8902</td><td>#2048</td><td>Smartphone Z9</td><td>04/01</td><td>R$ 3.199</td><td>Loja</td></tr>
+  <tr><td>TX-8915</td><td>#2048</td><td>Capinha Slim</td><td>06/01</td><td>R$ 59</td><td>App</td></tr>
+  <tr><td>TX-8960</td><td>#3099</td><td>Smartphone A8</td><td>05/01</td><td>R$ 1.899</td><td>Site</td></tr>
+  <tr style="opacity:.4"><td colspan="6" style="text-align:center;padding:.6rem">... 12.847 registros selecionados</td></tr>
+  </tbody></table>`},
+  {phase:'preprocessamento',label:'Pré-processamento',title:'2. Pré-processamento',desc:'Limpeza dos dados: remoção de transações canceladas, correção de nomes de produtos, eliminação de duplicatas e preenchimento de campos ausentes.',icon:ICO.filter,
+  visual:`<table class="mini-table"><thead><tr><th>ID</th><th>Cliente</th><th>Produto</th><th>Data</th><th>Status</th><th>Ação</th></tr></thead><tbody>
+  <tr class="hl-row"><td>TX-8840</td><td>#1024</td><td>Capinha</td><td>08/01</td><td class="null-val">Cancelado</td><td style="color:var(--red);font-weight:600">Removido</td></tr>
+  <tr class="hl-row"><td>TX-8855</td><td>#2048</td><td class="strike">Smartfone Z9</td><td>04/01</td><td>OK</td><td style="color:var(--orange);font-weight:600">Corrigido → Smartphone Z9</td></tr>
+  <tr><td>TX-8821</td><td>#1024</td><td>Smartphone X12</td><td>02/01</td><td style="color:var(--green)">OK</td><td style="color:var(--green)">Mantido</td></tr>
+  <tr><td>TX-8834</td><td>#1024</td><td>Capinha Premium</td><td>08/01</td><td style="color:var(--green)">OK</td><td style="color:var(--green)">Mantido</td></tr>
+  </tbody></table>
+  <div style="display:flex;gap:.8rem;margin-top:.8rem;flex-wrap:wrap">
+    <span class="ftag" style="background:rgba(255,77,106,.08);color:var(--red)">342 cancelados removidos</span>
+    <span class="ftag" style="background:rgba(255,140,66,.08);color:var(--orange)">128 nomes corrigidos</span>
+    <span class="ftag" style="background:rgba(0,201,123,.08);color:var(--green)">12.377 registros limpos</span>
+  </div>`},
+  {phase:'transformacao',label:'Transformação',title:'3. Transformação',desc:'Os dados são reagrupados por cliente e ordenados cronologicamente. Cada cliente ganha uma "jornada" — uma lista ordenada de compras no tempo.',icon:ICO.shuffle,
+  visual:`<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div><p style="font-size:.82rem;color:var(--text-muted);font-weight:600;margin-bottom:.4rem;text-transform:uppercase;letter-spacing:1px">Cliente #1024</p>
+    <div class="seq-result"><span class="seq-node" style="background:rgba(109,92,255,.1);color:var(--accent2)">Smartphone</span><span class="seq-connector">${ICO.arrowR}</span><span class="seq-node" style="background:rgba(0,212,170,.1);color:var(--cyan)">Capinha</span><span class="seq-connector">${ICO.arrowR}</span><span class="seq-node" style="background:rgba(255,92,161,.1);color:var(--pink)">Película</span><span class="seq-connector">${ICO.arrowR}</span><span class="seq-node" style="background:rgba(255,140,66,.1);color:var(--orange)">Carregador</span></div></div>
+    <div><p style="font-size:.82rem;color:var(--text-muted);font-weight:600;margin-bottom:.4rem;text-transform:uppercase;letter-spacing:1px">Cliente #2048</p>
+    <div class="seq-result"><span class="seq-node" style="background:rgba(109,92,255,.1);color:var(--accent2)">Smartphone</span><span class="seq-connector">${ICO.arrowR}</span><span class="seq-node" style="background:rgba(0,212,170,.1);color:var(--cyan)">Capinha</span><span class="seq-connector">${ICO.arrowR}</span><span class="seq-node" style="background:rgba(255,92,161,.1);color:var(--pink)">Película</span></div></div>
+  </div>
+  <div style="margin-top:.8rem;padding:.5rem .8rem;border-radius:6px;background:rgba(0,212,170,.04);border:1px solid rgba(0,212,170,.1);font-size:.88rem;color:var(--text-muted)">Na <strong style="color:var(--pink)">Associação</strong>: {Smartphone, Capinha} = {Capinha, Smartphone}. Na <strong style="color:var(--cyan)">Sequência</strong>: Smartphone → Capinha ≠ Capinha → Smartphone.</div>`},
+  {phase:'mineracao',label:'Mineração',title:'4. Mineração de Dados',desc:'O algoritmo analisa todas as jornadas e identifica subsequências que aparecem com frequência acima do suporte mínimo. Resultado: sequências frequentes ranqueadas.',icon:ICO.search,
+  visual:`<table class="mini-table"><thead><tr><th>Sequência</th><th>Suporte</th><th>Confiança</th><th>Frequência</th></tr></thead><tbody>
+  <tr style="background:rgba(0,212,170,.04)"><td style="font-weight:600">Smartphone → Capinha → Película → Carregador</td><td style="color:var(--green);font-weight:600">67%</td><td>72%</td><td>8.291 clientes</td></tr>
+  <tr><td>Smartphone → Capinha → Película</td><td>78%</td><td>64%</td><td>9.654 clientes</td></tr>
+  <tr><td>Smartphone → Capinha</td><td>85%</td><td>—</td><td>10.520 clientes</td></tr>
+  <tr><td>Capinha → Película</td><td>72%</td><td>—</td><td>8.910 clientes</td></tr>
+  </tbody></table>
+  <div style="margin-top:.8rem;padding:.5rem .8rem;border-radius:6px;background:rgba(255,92,161,.04);border:1px solid rgba(255,92,161,.1);font-size:.88rem;color:var(--text-muted)">Sequência principal: <strong style="color:var(--text)">Smartphone → Capinha → Película → Carregador Portátil</strong> — 67% de suporte, presente em 2 de cada 3 clientes.</div>`},
+  {phase:'avaliacao',label:'Avaliação',title:'5. Avaliação e Interpretação',desc:'A equipe de negócio valida os resultados: os padrões fazem sentido? São acionáveis? A sequência é convertida em regras de recomendação e decisões de estoque.',icon:ICO.check,
+  visual:`<div style="display:flex;flex-direction:column;gap:.5rem">
+    <div style="display:flex;align-items:center;gap:.6rem;padding:.5rem .8rem;border-radius:6px;background:rgba(0,201,123,.05);border:1px solid rgba(0,201,123,.12)"><span style="color:var(--green);font-weight:700;font-size:.82rem">✓ Validado</span><span style="font-size:.88rem;color:var(--text-muted)">Padrão confirmado pelo time de produto — consistente com jornada de acessórios</span></div>
+    <div style="display:flex;align-items:center;gap:.6rem;padding:.5rem .8rem;border-radius:6px;background:rgba(0,201,123,.05);border:1px solid rgba(0,201,123,.12)"><span style="color:var(--green);font-weight:700;font-size:.82rem">✓ Acionável</span><span style="font-size:.88rem;color:var(--text-muted)">Regras implementadas no motor de recomendação e CRM</span></div>
+    <div style="display:flex;align-items:center;gap:.6rem;padding:.5rem .8rem;border-radius:6px;background:rgba(0,201,123,.05);border:1px solid rgba(0,201,123,.12)"><span style="color:var(--green);font-weight:700;font-size:.82rem">✓ Mensurável</span><span style="font-size:.88rem;color:var(--text-muted)">KPIs definidos: conversão de acessórios, ticket médio, ruptura de estoque</span></div>
+  </div>`}
+];
+
+const ACTIONS=[
+  {icon:ICO.target,title:'Recomendações no Momento Certo',desc:'Sugerir o próximo produto da sequência logo após a compra anterior.',example:'Se o cliente comprou um <strong>Smartphone</strong>, recomendar <strong>capinhas compatíveis</strong> em seguida.'},
+  {icon:ICO.mail,title:'Campanhas Personalizadas',desc:'Enviar comunicações segmentadas por etapa da jornada.',example:'Após a compra do smartphone, enviar campanha com <strong>acessórios compatíveis</strong> via e-mail.'},
+  {icon:ICO.box,title:'Planejamento de Estoque',desc:'Antecipar demanda de acessórios com base no volume de vendas.',example:'Aumento na venda de smartphones → prever demanda por <strong>capinhas e películas</strong>.'},
+  {icon:ICO.chart,title:'Aumento de Conversão',desc:'Exibir combos e ofertas progressivas na etapa atual da jornada.',example:'Exibir <strong>combos progressivos</strong> — "Comprou o smartphone? Leve a capinha com 20% off".'}
+];
+
+const SIMULATIONS=[
+  {label:'Smartphone',dot:'#6d5cff',progressColor:'linear-gradient(180deg,#6d5cff,#3b82f6,#00d4aa,#ff5ca1,#ff8c42)',
+   steps:[
+    {title:'Evento detectado',desc:'Cliente #1024 comprou Smartphone X12 por R$ 2.499 via App.',color:'#6d5cff',hl:null,tag:'Input'},
+    {title:'Consulta ao modelo',desc:'O sistema busca a sequência frequente que inicia com "Smartphone".',color:'#3b82f6',hl:null,tag:'Análise'},
+    {title:'Padrão encontrado',desc:'Sequência: Smartphone → Capinha (72%) → Película (64%) → Carregador (48%)',color:'#00d4aa',hl:'Próximo produto: Capinha — 72% de probabilidade',tag:'Match'},
+    {title:'Regra ativada',desc:'Motor de recomendação dispara sugestão de capinhas compatíveis com o modelo X12.',color:'#ff5ca1',hl:null,tag:'Trigger'},
+    {title:'Ação executada',desc:'Push notification + banner personalizado na homepage do cliente.',color:'#ff8c42',hl:null,tag:'Output'}
+   ],result:{next:'Capinha',prob:'72%',probColor:'#00d4aa',action:'Enviar recomendação de capinhas compatíveis',impact:'Aumento de conversão em acessórios'}},
+  {label:'Capinha',dot:'#00d4aa',progressColor:'linear-gradient(180deg,#00d4aa,#3b82f6,#6d5cff,#ff5ca1,#ff8c42)',
+   steps:[
+    {title:'Evento detectado',desc:'Cliente #1024 comprou Capinha Premium por R$ 79 via Site.',color:'#00d4aa',hl:null,tag:'Input'},
+    {title:'Consulta ao modelo',desc:'Sistema identifica que o cliente já está na 2ª etapa da sequência.',color:'#3b82f6',hl:null,tag:'Análise'},
+    {title:'Padrão encontrado',desc:'Próximo item na sequência: Película, com 64% de probabilidade.',color:'#6d5cff',hl:'Próximo produto: Película — 64% de probabilidade',tag:'Match'},
+    {title:'Regra ativada',desc:'Campanha de desconto progressivo: "Leve a película com 15% off".',color:'#ff5ca1',hl:null,tag:'Trigger'},
+    {title:'Ação executada',desc:'E-mail com desconto + produto destacado no carrinho sugerido.',color:'#ff8c42',hl:null,tag:'Output'}
+   ],result:{next:'Película',prob:'64%',probColor:'#3b82f6',action:'Oferecer película com desconto progressivo',impact:'Aumento do ticket médio'}},
+  {label:'Película',dot:'#ff5ca1',progressColor:'linear-gradient(180deg,#ff5ca1,#3b82f6,#00d4aa,#ff8c42,#6d5cff)',
+   steps:[
+    {title:'Evento detectado',desc:'Cliente #1024 comprou Película Protetora por R$ 39 via App.',color:'#ff5ca1',hl:null,tag:'Input'},
+    {title:'Consulta ao modelo',desc:'Cliente na 3ª etapa — falta 1 item para completar a sequência.',color:'#3b82f6',hl:null,tag:'Análise'},
+    {title:'Padrão encontrado',desc:'Último item: Carregador Portátil, com 48% de probabilidade.',color:'#00d4aa',hl:'Próximo produto: Carregador Portátil — 48% de probabilidade',tag:'Match'},
+    {title:'Regra ativada',desc:'Campanha de cross-sell premium com carregadores e acessórios de autonomia.',color:'#ff8c42',hl:null,tag:'Trigger'},
+    {title:'Ação executada',desc:'Push + e-mail com bundle "Complete sua experiência" enviados.',color:'#6d5cff',hl:null,tag:'Output'}
+   ],result:{next:'Carregador Portátil',prob:'48%',probColor:'#ff8c42',action:'Campanha de carregadores e acessórios premium',impact:'Retenção e recompra'}}
+];
+
+const KPIS=[
+  {value:'+28%',label:'Conversão de Acessórios',sub:'Mais vendas cruzadas por sequência'},
+  {value:'+17%',label:'Ticket Médio',sub:'Maior valor por pedido com combos'},
+  {value:'-12%',label:'Ruptura de Estoque',sub:'Previsão de demanda mais precisa'},
+  {value:'+35%',label:'Assertividade',sub:'Recomendações mais relevantes'}
+];
+
+
+// ---- RENDER ----
+function renderHeroSeq(){
+  document.getElementById('heroSeq').innerHTML=PRODUCTS.map((p,i)=>{
+    const arrow=i<PRODUCTS.length-1?`<span class="hero-seq-arrow">${ICO.arrowR}</span>`:'';
+    return`<div class="hero-seq-item tip" data-tip="${p.role}"><span class="seq-dot" style="background:${p.color}"></span>${p.name}</div>${arrow}`;
+  }).join('');
+}
+
+function renderCaso(){
+  const descs=['O cliente adquire o produto principal — ponto de partida da jornada.','Dias depois, busca proteção para o novo dispositivo.','Em seguida, complementa com película para a tela.','Por fim, garante autonomia de bateria para o dia a dia.'];
+  document.getElementById('casoSteps').innerHTML=PRODUCTS.map((p,i)=>`
+    <div class="card caso-card rv"><div class="caso-num">${i+1}</div><div class="caso-icon-wrap">${p.icon}</div><h3>${p.name}</h3><p>${descs[i]}</p></div>
+  `).join('');
+}
+
+function renderDataTags(){
+  document.getElementById('dataTags').innerHTML=DATA_FIELDS.map(f=>`<span class="dtag">${ICO.cart} ${f}</span>`).join('');
+}
+
+function renderClients(){
+  document.getElementById('clientsGrid').innerHTML=CLIENTS.map(c=>`
+    <div class="card client-card rv">
+      <div class="client-header"><div class="client-avatar"><img src="${c.avatar}" alt="${c.name}" onerror="this.parentElement.textContent='${c.initials}'"></div><div><div class="client-name">${c.name}</div><div class="client-id">ID #${c.id}</div></div></div>
+      <div class="client-events">${c.events.map(e=>`<div class="evt"><span class="evt-date">${e.date}</span><span class="evt-dot" style="background:${e.color}"></span><span class="evt-prod">${e.product}</span><span class="evt-val">${e.value}</span></div>`).join('')}</div>
+    </div>
+  `).join('');
+}
+
+function renderKDD(){
+  document.getElementById('kddTimeline').innerHTML=KDD_STEPS.map((s,i)=>`
+    <div class="kdd-step rv${i===0?' open':''}" data-phase="${s.phase}">
+      <div class="kdd-marker">${s.icon}</div>
+      <div class="kdd-content">
+        <div class="kdd-content-header" role="button" tabindex="0">
+          <div><div class="kdd-phase">${s.label}</div><div class="kdd-title">${s.title}</div></div>
+          <div class="kdd-toggle">${ICO.chevDown}</div>
+        </div>
+        <div class="kdd-body"><div class="kdd-body-inner">
+          <p class="kdd-desc">${s.desc}</p>
+          <div class="kdd-visual">${s.visual}</div>
+        </div></div>
+      </div>
+    </div>
+  `).join('');
+
+  document.querySelectorAll('.kdd-content-header').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const step=h.closest('.kdd-step');
+      const wasOpen=step.classList.contains('open');
+      document.querySelectorAll('.kdd-step.open').forEach(s=>s.classList.remove('open'));
+      if(!wasOpen)step.classList.add('open');
+    });
+    h.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();h.click();}});
+  });
+}
+
+function renderDiscovery(){
+  document.getElementById('discGrid').innerHTML=PRODUCTS.map((p,i)=>`
+    <div class="card disc-card rv">
+      <div class="disc-icon-wrap">${p.icon}</div>
+      <div class="disc-name">${p.name}</div>
+      <div class="disc-role">${p.role}</div>
+      <span class="disc-prob" style="background:${p.color}15;color:${p.color}">${p.prob?'Prob: '+p.prob:'Início da jornada'}</span>
+      <div class="disc-bar-track"><div class="disc-bar-fill" style="background:${p.color};--prob-w:${p.probW}"></div></div>
+    </div>
+  `).join('');
+}
+
+function renderActions(){
+  document.getElementById('actionsGrid').innerHTML=ACTIONS.map(a=>`
+    <div class="card act-card rv"><div class="act-icon">${a.icon}</div><div class="act-body"><h3>${a.title}</h3><p>${a.desc}</p><div class="act-example">${a.example}</div></div></div>
+  `).join('');
+}
+
+function renderSimButtons(){
+  document.getElementById('simSidebar').innerHTML=SIMULATIONS.map((s,i)=>`
+    <button class="sim-btn" data-idx="${i}"><span class="sb-dot" style="background:${s.dot}"></span><span class="sb-label">Comprou <strong>${s.label}</strong></span></button>
+  `).join('');
+  document.getElementById('simSidebar').addEventListener('click',e=>{
+    const btn=e.target.closest('.sim-btn');
+    if(!btn)return;
+    document.querySelectorAll('.sim-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    showSim(SIMULATIONS[parseInt(btn.dataset.idx)]);
+  });
+}
+
+function showSim(sim){
+  const el=document.getElementById('simMain');
+  el.innerHTML=`
+    <div class="sim-timeline">
+      <div class="sim-timeline-progress" id="simProgress" style="background:${sim.progressColor}"></div>
+      ${sim.steps.map((s,i)=>`
+        <div class="sim-s" data-delay="${i}">
+          <div class="sim-s-marker" style="background:${s.color}">${i+1}</div>
+          <div class="sim-s-content">
+            <h4><span style="color:${s.color};font-size:.78rem;text-transform:uppercase;letter-spacing:1px;font-weight:600;background:${s.color}15;padding:.15rem .45rem;border-radius:4px">${s.tag}</span> ${s.title}</h4>
+            <p>${s.desc}</p>
+            ${s.hl?`<div class="sim-hl">${ICO.spark} ${s.hl}</div>`:''}
+          </div>
+        </div>
+      `).join('')}
+      <div class="sim-result-card" id="simResultCard">
+        <div class="sim-result-header">Resultado da Previsão</div>
+        <div class="sim-result-grid">
+          <div class="sim-r-metric"><div class="sim-r-label">Próximo Produto</div><div class="sim-r-value" style="color:var(--text)">${sim.result.next}</div></div>
+          <div class="sim-r-metric"><div class="sim-r-label">Probabilidade</div><div class="sim-r-value" style="color:${sim.result.probColor}">${sim.result.prob}</div></div>
+          <div class="sim-r-metric"><div class="sim-r-label">Ação Recomendada</div><div class="sim-r-sub" style="font-size:.95rem;color:var(--text);margin-top:.15rem">${sim.result.action}</div></div>
+          <div class="sim-r-metric"><div class="sim-r-label">Impacto Esperado</div><div class="sim-r-sub" style="font-size:.95rem;color:var(--text);margin-top:.15rem">${sim.result.impact}</div></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const steps=el.querySelectorAll('.sim-s');
+  const progress=document.getElementById('simProgress');
+  const result=document.getElementById('simResultCard');
+  const timeline=el.querySelector('.sim-timeline');
+
+  let trackStartY=0,trackTotalH=0;
+  requestAnimationFrame(()=>{
+    const firstM=steps[0].querySelector('.sim-s-marker');
+    const lastM=steps[steps.length-1].querySelector('.sim-s-marker');
+    const tRect=timeline.getBoundingClientRect();
+    const fRect=firstM.getBoundingClientRect();
+    const lRect=lastM.getBoundingClientRect();
+    const cx=fRect.left+fRect.width/2-tRect.left;
+    trackStartY=fRect.top+fRect.height/2-tRect.top;
+    const endY=lRect.top+lRect.height/2-tRect.top;
+    trackTotalH=endY-trackStartY;
+    timeline.style.setProperty('--track-x',cx+'px');
+    timeline.style.setProperty('--track-top',trackStartY+'px');
+    timeline.style.setProperty('--track-h',trackTotalH+'px');
+  });
+
+  steps.forEach((s,i)=>{
+    setTimeout(()=>{
+      s.classList.add('show');
+      const pct=((i+1)/steps.length)*trackTotalH;
+      progress.style.height=Math.min(pct,trackTotalH)+'px';
+    },(i+1)*280);
+  });
+  setTimeout(()=>{result.classList.add('show');},(steps.length+1)*280);
+}
+
+function renderKPIs(){
+  document.getElementById('kpiGrid').innerHTML=KPIS.map(k=>`
+    <div class="card kpi-card rv"><div class="kpi-bar"></div><div class="kpi-val">${k.value}</div><div class="kpi-label">${k.label}</div><div class="kpi-sub">${k.sub}</div></div>
+  `).join('');
+}
+
+
+// ---- OBSERVERS ----
+function setupReveal(){
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');});},{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+}
+
+function setupNav(){
+  const nav=document.getElementById('nav');
+  const links=document.querySelectorAll('.nav-links a[data-section]');
+  const sections=Array.from(links).map(a=>document.getElementById(a.dataset.section)).filter(Boolean);
+
+  let ticking=false;
+  window.addEventListener('scroll',()=>{
+    if(ticking)return;
+    ticking=true;
+    requestAnimationFrame(()=>{
+      nav.classList.toggle('scrolled',window.scrollY>60);
+
+      const scrollH=document.documentElement.scrollHeight-window.innerHeight;
+      document.getElementById('scrollProgress').style.width=(window.scrollY/scrollH*100)+'%';
+
+      let current='';
+      sections.forEach(s=>{if(s.getBoundingClientRect().top<200)current=s.id;});
+      links.forEach(a=>{a.classList.toggle('active',a.dataset.section===current);});
+
+      ticking=false;
+    });
+  });
+}
+
+function setupCounters(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting&&!e.target.dataset.counted){
+        e.target.dataset.counted='1';
+        const valEl=e.target.querySelector('.kpi-val');
+        const m=valEl.textContent.match(/([+-])(\d+)(%)/);
+        if(!m)return;
+        const sign=m[1],target=+m[2],suffix=m[3];
+        let cur=0;const step=Math.max(1,Math.ceil(target/35));
+        const iv=setInterval(()=>{cur=Math.min(cur+step,target);valEl.textContent=sign+cur+suffix;if(cur>=target)clearInterval(iv);},28);
+      }
+    });
+  },{threshold:.5});
+  document.querySelectorAll('.kpi-card').forEach(el=>obs.observe(el));
+}
+
+function renderConclusion(){
+  const steps=[
+    {icon:ICO.cart,label:'Cliente compra',desc:'O cliente adquire um smartphone no e-commerce',color:'#6d5cff'},
+    {icon:ICO.db,label:'Dados registrados',desc:'Transação armazenada com ID, produto, data e canal',color:'#3b82f6'},
+    {icon:ICO.filter,label:'Dados selecionados e limpos',desc:'Filtragem de registros relevantes e remoção de inconsistências',color:'#00d4aa'},
+    {icon:ICO.shuffle,label:'Sequências formadas',desc:'Compras organizadas em ordem temporal por cliente',color:'#00c97b'},
+    {icon:ICO.search,label:'Padrão descoberto',desc:'Algoritmo identifica: Smartphone → Capinha → Película → Carregador',color:'#ff5ca1'},
+    {icon:ICO.spark,label:'Previsão gerada',desc:'Sistema prevê o próximo produto com probabilidade calculada',color:'#ff8c42'},
+    {icon:ICO.target,label:'Oferta personalizada',desc:'Cliente recebe recomendação no momento ideal de compra',color:'#8b7dff'}
+  ];
+  const pillars=[
+    {icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>`,title:'Antecipar',desc:'Prever o próximo item antes que o cliente procure'},
+    {icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>`,title:'Otimizar',desc:'Abastecer estoques com base em sequências reais de demanda'},
+    {icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,title:'Personalizar',desc:'Entregar a oferta certa, no momento certo, ao cliente certo'}
+  ];
+  const block=document.getElementById('conclusionBlock');
+  block.innerHTML=`
+    <div class="conclusion-layout">
+      <div class="conclusion-flow">${steps.map((s,i)=>`
+        <div class="cf-step">
+          <div class="cf-marker" style="border-color:${s.color}30;color:${s.color}"><span class="cf-num" style="background:${s.color}">${i+1}</span>${s.icon}</div>
+          <div class="cf-content"><div class="cf-label">${s.label}</div><div class="cf-desc">${s.desc}</div></div>
+        </div>
+      `).join('')}</div>
+      <div class="conclusion-right">
+        <div class="conclusion-pillars">${pillars.map(p=>`
+          <div class="card cpillar rv"><div class="cpillar-icon">${p.icon}</div><div class="cpillar-title">${p.title}</div><div class="cpillar-desc">${p.desc}</div></div>
+        `).join('')}</div>
+      </div>
+    </div>
+    <div class="conclusion-tagline"><p>A <strong>Descoberta de Sequências</strong> transforma padrões temporais de compra em inteligência acionável — permitindo que o varejo <strong>antecipe, otimize e personalize</strong> cada interação com o cliente.</p></div>
+  `;
+}
+
+// ---- HERO PARALLAX (subtle) ----
+function setupHeroParallax(){
+  const orbs=document.querySelectorAll('.hero-bg .orb');
+  let lastX=0,lastY=0;
+  document.addEventListener('mousemove',e=>{
+    const x=(e.clientX/window.innerWidth-.5)*2;
+    const y=(e.clientY/window.innerHeight-.5)*2;
+    if(Math.abs(x-lastX)<.01&&Math.abs(y-lastY)<.01)return;
+    lastX=x;lastY=y;
+    orbs[0].style.transform=`translate(${x*20}px,${y*15}px)`;
+    orbs[1].style.transform=`translate(${x*-15}px,${y*-10}px)`;
+    orbs[2].style.transform=`translate(${x*10}px,${y*-20}px)`;
+  });
+}
+
+// ---- INIT ----
+document.addEventListener('DOMContentLoaded',()=>{
+  renderHeroSeq();renderCaso();renderDataTags();renderClients();
+  renderKDD();renderDiscovery();renderActions();renderSimButtons();
+  renderKPIs();renderConclusion();setupNav();setupHeroParallax();
+  requestAnimationFrame(()=>{setupReveal();setupCounters();});
+});
+</script>
+</body>
+</html>
