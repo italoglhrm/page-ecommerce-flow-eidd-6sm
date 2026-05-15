@@ -171,11 +171,7 @@ section:first-of-type{padding-top:0}
 .kdd-step[data-phase="avaliacao"] .kdd-marker:hover{box-shadow:0 0 20px rgba(255,140,66,.15)}
 
 .kdd-content{border-radius:var(--radius);background:var(--surface);border:1px solid var(--glass-border);overflow:hidden;transition:border-color .3s var(--ease),box-shadow .3s var(--ease)}
-.kdd-content-header{padding:1.3rem 1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background .25s;user-select:none}
-.kdd-content-header:hover{background:rgba(255,255,255,.015)}
-.kdd-content-header .kdd-toggle{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;transition:transform .35s var(--ease),background .25s;flex-shrink:0}
-.kdd-content-header:hover .kdd-toggle{background:rgba(255,255,255,.07)}
-.kdd-step.open .kdd-content-header .kdd-toggle{transform:rotate(180deg)}
+.kdd-content-header{padding:1.3rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
 .kdd-phase{font-size:.8rem;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:.2rem}
 .kdd-step[data-phase="selecao"] .kdd-phase{color:var(--accent2)}
 .kdd-step[data-phase="preprocessamento"] .kdd-phase{color:var(--blue)}
@@ -183,12 +179,41 @@ section:first-of-type{padding-top:0}
 .kdd-step[data-phase="mineracao"] .kdd-phase{color:var(--pink)}
 .kdd-step[data-phase="avaliacao"] .kdd-phase{color:var(--orange)}
 .kdd-title{font-size:1.12rem;font-weight:700}
-.kdd-body{max-height:0;overflow:hidden;transition:max-height .45s var(--ease)}
-.kdd-step.open .kdd-body{max-height:600px}
+.kdd-body{overflow:hidden}
 .kdd-body-inner{padding:0 1.5rem 1.5rem}
 .kdd-desc{font-size:.95rem;color:var(--text-muted);line-height:1.75;margin-bottom:1rem}
 .kdd-visual{border-radius:var(--radius-sm);background:rgba(255,255,255,.02);border:1px solid var(--glass-border);padding:1rem;overflow-x:auto}
-.kdd-step.open .kdd-content{border-color:rgba(255,255,255,.12)}
+
+/* KDD Canvas */
+.kdd-canvas-wrap{width:100%;border-radius:var(--radius);overflow:hidden;background:rgba(255,255,255,.015);border:1px solid var(--glass-border);margin-bottom:1.5rem;position:relative}
+.kdd-canvas-wrap canvas{display:block;width:100%;height:520px}
+.kdd-canvas-phase-label{position:absolute;top:12px;left:16px;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;opacity:.7;transition:color .4s}
+
+/* KDD Run Button & Progress */
+.kdd-run-wrap{display:flex;flex-direction:column;gap:1.2rem;margin-bottom:2rem}
+.kdd-btn-row{display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.kdd-run-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.6rem;border-radius:var(--radius-sm);background:linear-gradient(135deg,#6d5cff,#5a4de6);border:none;color:#fff;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .25s var(--ease);align-self:flex-start}
+.kdd-run-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 24px rgba(109,92,255,.4)}
+.kdd-run-btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+.kdd-next-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.6rem;border-radius:var(--radius-sm);background:rgba(255,255,255,.06);border:1px solid var(--glass-border);color:var(--text);font-size:.9rem;font-weight:600;cursor:pointer;transition:all .25s var(--ease)}
+.kdd-next-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);transform:translateY(-1px)}
+.kdd-prog-track{display:flex;align-items:flex-start;justify-content:space-between;position:relative;padding:0 .5rem}
+.kdd-prog-track::before{content:'';position:absolute;top:9px;left:10%;right:10%;height:2px;background:var(--glass-border);z-index:0}
+.kdd-prog-fill{position:absolute;top:9px;left:10%;height:2px;background:linear-gradient(90deg,#6d5cff,#3b82f6,#00d4aa,#ff5ca1,#ff8c42);width:0;transition:width .6s var(--ease);z-index:1}
+.kdd-prog-item{display:flex;flex-direction:column;align-items:center;gap:.4rem;position:relative;z-index:2;flex:1}
+.kdd-prog-dot{width:20px;height:20px;border-radius:50%;background:var(--bg);border:2px solid var(--glass-border);transition:all .4s var(--ease)}
+.kdd-prog-label{font-size:.72rem;color:var(--text-muted);text-align:center;transition:color .4s;white-space:nowrap}
+.kdd-prog-item.active .kdd-prog-dot{transform:scale(1.2)}
+.kdd-prog-item[data-i="0"].active .kdd-prog-dot{border-color:#6d5cff;background:#6d5cff;box-shadow:0 0 12px rgba(109,92,255,.55)}
+.kdd-prog-item[data-i="1"].active .kdd-prog-dot{border-color:#3b82f6;background:#3b82f6;box-shadow:0 0 12px rgba(59,130,246,.55)}
+.kdd-prog-item[data-i="2"].active .kdd-prog-dot{border-color:#00d4aa;background:#00d4aa;box-shadow:0 0 12px rgba(0,212,170,.55)}
+.kdd-prog-item[data-i="3"].active .kdd-prog-dot{border-color:#ff5ca1;background:#ff5ca1;box-shadow:0 0 12px rgba(255,92,161,.55)}
+.kdd-prog-item[data-i="4"].active .kdd-prog-dot{border-color:#ff8c42;background:#ff8c42;box-shadow:0 0 12px rgba(255,140,66,.55)}
+.kdd-prog-item.done .kdd-prog-dot{border-color:#00c97b;background:#00c97b}
+.kdd-prog-item.active .kdd-prog-label,.kdd-prog-item.done .kdd-prog-label{color:var(--text)}
+@keyframes kdd-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.kdd-step.running .kdd-marker{animation:kdd-pulse .85s ease-in-out infinite}
+.kdd-step.done .kdd-marker{filter:brightness(1.25)}
 
 /* Mini table */
 .mini-table{width:100%;border-collapse:collapse;font-size:.85rem}
@@ -444,7 +469,25 @@ section:first-of-type{padding-top:0}
   <div class="container">
     <span class="badge badge-pink rv">Processo KDD</span>
     <h2 class="s-title rv">Fluxo de Dados</h2>
-    <p class="s-desc rv">Clique em cada etapa para ver como os dados brutos de compra são transformados em conhecimento acionável.</p>
+    <p class="s-desc rv">Execute o fluxo completo automaticamente ou clique em cada etapa para explorar.</p>
+    <div class="kdd-canvas-wrap rv">
+      <canvas id="kddCanvas" height="520"></canvas>
+      <div class="kdd-canvas-phase-label" id="kddCanvasLabel"></div>
+    </div>
+    <div class="kdd-run-wrap rv">
+      <div class="kdd-btn-row">
+        <button class="kdd-run-btn" id="kddRunBtn" onclick="runKDD()">&#9654; Executar KDD</button>
+        <button class="kdd-next-btn" id="kddNextBtn" style="display:none"></button>
+      </div>
+      <div class="kdd-prog-track" id="kddProgTrack">
+        <div class="kdd-prog-fill" id="kddProgFill"></div>
+        <div class="kdd-prog-item" data-i="0"><div class="kdd-prog-dot"></div><span class="kdd-prog-label">1.</span></div>
+        <div class="kdd-prog-item" data-i="1"><div class="kdd-prog-dot"></div><span class="kdd-prog-label">2.</span></div>
+        <div class="kdd-prog-item" data-i="2"><div class="kdd-prog-dot"></div><span class="kdd-prog-label">3.</span></div>
+        <div class="kdd-prog-item" data-i="3"><div class="kdd-prog-dot"></div><span class="kdd-prog-label">4.</span></div>
+        <div class="kdd-prog-item" data-i="4"><div class="kdd-prog-dot"></div><span class="kdd-prog-label">5.</span></div>
+      </div>
+    </div>
     <div class="kdd-timeline" id="kddTimeline"></div>
   </div>
 </section>
@@ -681,14 +724,63 @@ function renderClients(){
   `).join('');
 }
 
+function runKDD(){
+  const btn    = document.getElementById('kddRunBtn');
+  const nextBtn= document.getElementById('kddNextBtn');
+  const dots   = document.querySelectorAll('.kdd-prog-item');
+  const fill   = document.getElementById('kddProgFill');
+  let phaseTimer   = null;
+  const ANIM_DUR   = 9000;
+
+  const phaseNames = ['Seleção','Pré-processamento','Transformação','Mineração de Dados','Avaliação'];
+
+  function goToPhase(i) {
+    dots.forEach((d, di) => {
+      d.classList.remove('active','done');
+      if (di < i) d.classList.add('done');
+      else if (di === i) d.classList.add('active');
+    });
+    fill.style.width = i === 0 ? '0%' : (i / (dots.length - 1) * 80) + '%';
+
+    drawKDDPhase(i);
+
+    if (nextBtn) { nextBtn.style.display = 'none'; nextBtn.textContent = ''; }
+
+    if (phaseTimer) clearTimeout(phaseTimer);
+    phaseTimer = setTimeout(() => {
+      if (i < 4) {
+        if (nextBtn) {
+          nextBtn.textContent = '  →';
+          nextBtn.style.display = 'inline-flex';
+          nextBtn.onclick = () => goToPhase(i + 1);
+        }
+      } else {
+        dots[i].classList.remove('active');
+        dots[i].classList.add('done');
+        fill.style.width = '80%';
+        btn.disabled = false;
+        btn.textContent = '↺ Reiniciar';
+        if (nextBtn) nextBtn.style.display = 'none';
+      }
+    }, ANIM_DUR);
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Executando…';
+  dots.forEach(d => d.classList.remove('active','done'));
+  fill.style.width = '0';
+  if (nextBtn) nextBtn.style.display = 'none';
+  drawKDDPhase(-1);
+  setTimeout(() => goToPhase(0), 400);
+}
+
 function renderKDD(){
   document.getElementById('kddTimeline').innerHTML=KDD_STEPS.map((s,i)=>`
-    <div class="kdd-step rv${i===0?' open':''}" data-phase="${s.phase}">
+    <div class="kdd-step rv" data-phase="${s.phase}">
       <div class="kdd-marker">${s.icon}</div>
       <div class="kdd-content">
-        <div class="kdd-content-header" role="button" tabindex="0">
+        <div class="kdd-content-header">
           <div><div class="kdd-phase">${s.label}</div><div class="kdd-title">${s.title}</div></div>
-          <div class="kdd-toggle">${ICO.chevDown}</div>
         </div>
         <div class="kdd-body"><div class="kdd-body-inner">
           <p class="kdd-desc">${s.desc}</p>
@@ -697,16 +789,6 @@ function renderKDD(){
       </div>
     </div>
   `).join('');
-
-  document.querySelectorAll('.kdd-content-header').forEach(h=>{
-    h.addEventListener('click',()=>{
-      const step=h.closest('.kdd-step');
-      const wasOpen=step.classList.contains('open');
-      document.querySelectorAll('.kdd-step.open').forEach(s=>s.classList.remove('open'));
-      if(!wasOpen)step.classList.add('open');
-    });
-    h.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();h.click();}});
-  });
 }
 
 function renderDiscovery(){
@@ -885,6 +967,1163 @@ function renderConclusion(){
     <div class="conclusion-tagline"><p>A <strong>Descoberta de Sequências</strong> transforma padrões temporais de compra em inteligência acionável — permitindo que o varejo <strong>antecipe, otimize e personalize</strong> cada interação com o cliente.</p></div>
   `;
 }
+
+// ---- KDD CANVAS VISUALIZATION ----
+(function(){
+  // ── Palette ──────────────────────────────────────────────────────────────
+  const C_SMT    = '#6d5cff';
+  const C_CAP    = '#00d4aa';
+  const C_PEL    = '#ff5ca1';
+  const C_CAR    = '#ff8c42';
+  const C_BG     = '#111322';
+  const C_TEXT   = '#e8eaf6';
+  const C_MUTED  = 'rgba(255,255,255,0.5)';
+  const C_BORDER = 'rgba(255,255,255,0.08)';
+
+  const PHASE_COLORS = ['#6d5cff','#3b82f6','#00d4aa','#ff5ca1','#ff8c42'];
+
+  // ── Zone layout constants (CSS pixels) ───────────────────────────────────
+  const ZONE_INFO_TOP  = 0;    // phase header + subtitle
+  const ZONE_INFO_BOT  = 90;   // end of info zone
+  const ZONE_FLOW_TOP  = 100;  // start of flow/visualization
+  const ZONE_FLOW_BOT  = 440;  // end of flow zone
+  const ZONE_STATS_TOP = 448;  // start of stats bar
+  const ZONE_STATS_BOT = 530;  // canvas bottom
+
+  const PHASE_LABELS = [
+    'FASE 1 — SELEÇÃO',
+    'FASE 2 — PRÉ-PROCESSAMENTO',
+    'FASE 3 — TRANSFORMAÇÃO',
+    'FASE 4 — MINERAÇÃO',
+    'FASE 5 — AVALIAÇÃO'
+  ];
+
+  // ── State ─────────────────────────────────────────────────────────────────
+  let _rafId   = null;
+  let _phase   = -1;
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+  function lerp(a, b, t)    { return a + (b - a) * t; }
+  function easeOut(t)        { return 1 - Math.pow(1 - t, 3); }
+  function easeInOut(t)      { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
+
+  // Seeded PRNG for stable random layouts across redraws
+  function seededRng(seed) {
+    let s = seed;
+    return function() {
+      s = (s * 1664525 + 1013904223) & 0xffffffff;
+      return (s >>> 0) / 0xffffffff;
+    };
+  }
+
+  // Canvas-drawn persona portraits — no external dependencies
+  function drawPersonaPortrait(ctx, x, y, r, personaIdx, color, alpha, showName) {
+    if (alpha <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = clamp(alpha, 0, 1);
+
+    // Background glow
+    const bg = ctx.createRadialGradient(x, y, 0, x, y, r);
+    bg.addColorStop(0, color + '30');
+    bg.addColorStop(1, color + '08');
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = bg; ctx.fill();
+
+    // Hair (drawn first, behind face)
+    const hairColors = ['#3b2005', '#1c1c2e', '#1e0e05'];
+    ctx.fillStyle = hairColors[personaIdx] || hairColors[0];
+    if (personaIdx === 0) {
+      // Ana: long flowing hair — top cap + side curtains
+      ctx.beginPath();
+      ctx.ellipse(x, y - r * 0.14, r * 0.58, r * 0.40, 0, Math.PI, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath(); ctx.ellipse(x - r * 0.52, y + r * 0.14, r * 0.16, r * 0.54, -0.15, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(x + r * 0.52, y + r * 0.14, r * 0.16, r * 0.54,  0.15, 0, Math.PI * 2); ctx.fill();
+    } else if (personaIdx === 1) {
+      // Carlos: short buzzcut + light beard
+      ctx.beginPath();
+      ctx.ellipse(x, y - r * 0.22, r * 0.56, r * 0.28, 0, Math.PI, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = clamp(alpha * 0.45, 0, 1);
+      ctx.beginPath();
+      ctx.ellipse(x, y + r * 0.5, r * 0.40, r * 0.20, 0, 0, Math.PI);
+      ctx.fill();
+      ctx.globalAlpha = clamp(alpha, 0, 1);
+    } else {
+      // Julia: wide afro
+      ctx.beginPath();
+      ctx.arc(x, y - r * 0.14, r * 0.64, Math.PI, Math.PI * 2);
+      ctx.fill();
+      const bumps = [-0.72, -0.36, 0, 0.36, 0.72];
+      bumps.forEach(dx => {
+        ctx.beginPath();
+        ctx.arc(x + dx * r, y - r * 0.72, r * 0.28, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+    // Face skin
+    const skins = ['#f5c9a4', '#c8834a', '#e2a06a'];
+    ctx.fillStyle = skins[personaIdx] || skins[0];
+    ctx.beginPath();
+    ctx.ellipse(x, y + r * 0.08, r * 0.50, r * 0.56, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Eyes
+    ctx.fillStyle = '#2a1a0a';
+    ctx.beginPath(); ctx.arc(x - r * 0.16, y - r * 0.04, r * 0.072, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + r * 0.16, y - r * 0.04, r * 0.072, 0, Math.PI * 2); ctx.fill();
+    // Eye shine
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.beginPath(); ctx.arc(x - r * 0.13, y - r * 0.07, r * 0.028, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + r * 0.19, y - r * 0.07, r * 0.028, 0, Math.PI * 2); ctx.fill();
+
+    // Smile
+    ctx.strokeStyle = '#5a3018';
+    ctx.lineWidth = r * 0.055;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.arc(x, y + r * 0.14, r * 0.20, 0.15, Math.PI - 0.15);
+    ctx.stroke();
+
+    // Optional name tag below portrait (for larger display)
+    if (showName) {
+      const names = ['Ana Silva', 'Carlos Mendes', 'Julia Rocha'];
+      ctx.fillStyle = color;
+      ctx.font = `bold ${Math.round(r * 0.44)}px Inter,sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.fillText(names[personaIdx] || '', x, y + r + 6);
+    }
+
+    ctx.restore();
+  }
+
+  function getCanvas() { return document.getElementById('kddCanvas'); }
+
+  function initCanvas(canvas) {
+    const wrap = canvas.parentElement;
+    const W    = wrap.clientWidth || 640;
+    const dpr  = window.devicePixelRatio || 1;
+    canvas.width  = W * dpr;
+    canvas.height = 530 * dpr;
+    canvas.style.width  = W + 'px';
+    canvas.style.height = '530px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    return ctx;
+  }
+
+  // Logical canvas dimensions (CSS pixels)
+  function canvasW(canvas) { return parseInt(canvas.style.width  || canvas.width,  10); }
+  function canvasH(canvas) { return parseInt(canvas.style.height || canvas.height, 10); }
+
+  function clearBg(ctx, W, H) {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = C_BG;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // Phase header bar: y 0–52
+  function drawPhaseHeader(ctx, W, phaseIdx, alpha) {
+    const color = PHASE_COLORS[phaseIdx];
+    const label = PHASE_LABELS[phaseIdx];
+    ctx.save();
+    ctx.globalAlpha = clamp(alpha, 0, 1);
+
+    // Subtle background tint
+    ctx.fillStyle = color + '18';
+    ctx.fillRect(0, 0, W, 52);
+
+    // Left accent border
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, 4, 52);
+
+    // Phase text
+    ctx.fillStyle = color;
+    ctx.font = 'bold 16px Inter,sans-serif';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, 20, 26);
+
+    ctx.restore();
+  }
+
+  // Subtitle line at y≈60
+  function drawSubtitle(ctx, W, text, alpha) {
+    ctx.save();
+    ctx.globalAlpha = clamp(alpha, 0, 1);
+    ctx.fillStyle = C_MUTED;
+    ctx.font = '13px Inter,sans-serif';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText(text, 20, 58);
+    ctx.restore();
+  }
+
+  // Bottom stats bar: uses ZONE_STATS_TOP/BOT
+  function drawStatsBar(ctx, W, parts, alpha) {
+    ctx.save();
+    ctx.globalAlpha = clamp(alpha, 0, 1);
+
+    // Background strip
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    ctx.fillRect(0, ZONE_STATS_TOP, W, ZONE_STATS_BOT - ZONE_STATS_TOP);
+    ctx.strokeStyle = C_BORDER;
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, ZONE_STATS_TOP); ctx.lineTo(W, ZONE_STATS_TOP); ctx.stroke();
+
+    // Parts: array of {text, color}
+    const midY = (ZONE_STATS_TOP + ZONE_STATS_BOT) / 2;
+    const seg = W / parts.length;
+    parts.forEach((p, i) => {
+      const cx = seg * i + seg / 2;
+      ctx.fillStyle = p.color || C_MUTED;
+      ctx.font = p.bold ? 'bold 15px Inter,sans-serif' : '14px Inter,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(p.text, cx, midY);
+    });
+    ctx.restore();
+  }
+
+  // Filled circle node: color fill at 20% opacity, full-color border, white label
+  function drawNode(ctx, x, y, r, color, label, alpha, glowR) {
+    if (alpha <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = clamp(alpha, 0, 1);
+
+    // Glow halo
+    if (glowR > 0) {
+      const g = ctx.createRadialGradient(x, y, 0, x, y, glowR);
+      g.addColorStop(0, color + '55');
+      g.addColorStop(1, color + '00');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(x, y, glowR, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Fill (20% tint)
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = color + '33';
+    ctx.fill();
+
+    // Border
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Label
+    if (label) {
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `bold ${Math.max(9, Math.round(r * 0.62))}px Inter,sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, x, y);
+    }
+    ctx.restore();
+  }
+
+  // Animated arrow between two points; progress 0→1 draws the line
+  function drawArrow(ctx, x1, y1, x2, y2, color, progress, alpha) {
+    if (progress <= 0 || alpha <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = clamp(alpha, 0, 1);
+
+    const tx = lerp(x1, x2, progress);
+    const ty = lerp(y1, y2, progress);
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth   = 1.8;
+    ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(tx, ty); ctx.stroke();
+
+    // Arrowhead fades in at the tip when progress > 0.8
+    if (progress > 0.8) {
+      const af = clamp((progress - 0.8) / 0.2, 0, 1);
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+      const hs = 9 * af;
+      ctx.globalAlpha = clamp(alpha * af, 0, 1);
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(tx, ty);
+      ctx.lineTo(tx - hs * Math.cos(angle - 0.42), ty - hs * Math.sin(angle - 0.42));
+      ctx.lineTo(tx - hs * Math.cos(angle + 0.42), ty - hs * Math.sin(angle + 0.42));
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // Draw a product icon inside a node (used for large Phase 4 nodes)
+  function drawProductIcon(ctx, cx, cy, r, productIdx, alpha) {
+    if (alpha <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = clamp(alpha, 0, 1);
+    ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+    ctx.fillStyle   = 'rgba(255,255,255,0.9)';
+    ctx.lineWidth   = 1.6;
+    ctx.lineCap     = 'round';
+    ctx.lineJoin    = 'round';
+    ctx.translate(cx, cy);
+    const s = r * 0.62;
+
+    if (productIdx === 0) {
+      // Smartphone: portrait rounded rect + home dot + camera
+      const w = s * 0.72, h = s * 1.25, rx = s * 0.15;
+      ctx.beginPath(); ctx.roundRect(-w/2, -h/2, w, h, rx); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, h/2 - s*0.18, s*0.1, 0, Math.PI*2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, -h/2 + s*0.14, s*0.06, 0, Math.PI*2); ctx.fill();
+    } else if (productIdx === 1) {
+      // Capinha: outer case + inner dashed phone
+      const ow = s*0.88, oh = s*1.38, orx = s*0.22;
+      ctx.beginPath(); ctx.roundRect(-ow/2, -oh/2, ow, oh, orx); ctx.stroke();
+      ctx.setLineDash([2, 2]);
+      const iw = ow*0.62, ih = oh*0.72;
+      ctx.beginPath(); ctx.roundRect(-iw/2, -ih/2, iw, ih, s*0.08); ctx.stroke();
+      ctx.setLineDash([]);
+    } else if (productIdx === 2) {
+      // Película: thin rounded rect + corner peel + center line
+      const w = s*0.82, h = s*1.12, rx = s*0.07;
+      ctx.beginPath(); ctx.roundRect(-w/2, -h/2, w, h, rx); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(w/2 - s*0.26, -h/2); ctx.lineTo(w/2, -h/2 + s*0.26); ctx.lineTo(w/2, -h/2);
+      ctx.closePath(); ctx.globalAlpha *= 0.5; ctx.fill(); ctx.globalAlpha /= 0.5;
+      ctx.setLineDash([2, 3]);
+      ctx.beginPath(); ctx.moveTo(-w/2 + s*0.12, 0); ctx.lineTo(w/2 - s*0.12, 0); ctx.stroke();
+      ctx.setLineDash([]);
+    } else if (productIdx === 3) {
+      // Carregador: battery body + terminal + lightning bolt
+      const bw = s*0.9, bh = s*0.52;
+      ctx.beginPath(); ctx.roundRect(-bw/2, -bh/2, bw*0.84, bh, s*0.08); ctx.stroke();
+      ctx.beginPath(); ctx.roundRect(bw*0.84/2, -bh*0.3, s*0.13, bh*0.6, s*0.04); ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo( s*0.07, -bh*0.32);
+      ctx.lineTo(-s*0.09,  s*0.02);
+      ctx.lineTo( s*0.02,  s*0.02);
+      ctx.lineTo(-s*0.12,  bh*0.32);
+      ctx.lineTo( s*0.10,  s*0.01);
+      ctx.lineTo( s*0.01,  s*0.01);
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // Client avatar circle (initials inside)
+  function drawAvatar(ctx, x, y, initials, idLabel, color, alpha, avatarIdx, overrideR, showName) {
+    if (alpha <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = clamp(alpha, 0, 1);
+    const r = overrideR || 22;
+
+    if (avatarIdx !== undefined) {
+      drawPersonaPortrait(ctx, x, y, r, avatarIdx, color, alpha, showName);
+    } else {
+      // Generic fallback: gradient + initials
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, color + 'cc');
+      g.addColorStop(1, color + '33');
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fillStyle = g; ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 11px Inter,sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(initials, x, y - 2);
+    }
+
+    // Border ring always drawn (needs separate save since clip consumed the path)
+    ctx.restore();
+    ctx.save();
+    ctx.globalAlpha = clamp(alpha, 0, 1);
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke();
+
+    // ID label below avatar
+    ctx.fillStyle = color;
+    ctx.font = 'bold 9px Inter,sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ctx.fillText(idLabel, x, y + r + 3);
+    ctx.restore();
+  }
+
+  // ── Shared layout data ────────────────────────────────────────────────────
+  const PROD_ABBR   = ['SM', 'CA', 'PE', 'CR'];
+  const PROD_NAMES  = ['Smartphone', 'Capinha', 'Película', 'Carregador'];
+  const PROD_COLORS = [C_SMT, C_CAP, C_PEL, C_CAR];
+
+  // Client sequence rows layout (returns array based on canvas width)
+  function clientRows(W, large) {
+    const nStartX = 162;
+    const nR      = large ? 36 : 34;
+    const gap     = Math.min(large ? 100 : 108, (W - nStartX - 30) / 4);
+    return [
+      { avY: 168, name: 'Ana Silva',     id: '#1024', color: '#8b7dff', prods: [0,1,2,3] },
+      { avY: 278, name: 'Carlos Mendes', id: '#2048', color: '#00d4aa', prods: [0,1,2]   },
+      { avY: 388, name: 'Julia Rocha',   id: '#3099', color: '#ff8c42', prods: [0,1,2,3] },
+    ].map(r => ({ ...r, nStartX, nR, gap }));
+  }
+
+  // Client name label replacing avatar portrait
+  function drawClientLabel(ctx, row, alpha, xOff) {
+    xOff = xOff || 0;
+    ctx.save();
+    ctx.globalAlpha = clamp(alpha, 0, 1);
+    ctx.fillStyle = row.color;
+    ctx.beginPath(); ctx.roundRect(8 + xOff, row.avY - 20, 4, 40, 2); ctx.fill();
+    ctx.font = 'bold 13px Inter,sans-serif';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText(row.name, 18 + xOff, row.avY - 7);
+    ctx.font = '11px Inter,sans-serif';
+    ctx.fillStyle = C_MUTED;
+    ctx.fillText(row.id, 18 + xOff, row.avY + 9);
+    ctx.restore();
+  }
+
+  // Draw all three client rows (fully visible, no animation)
+  function drawClientRowsStatic(ctx, W, alpha) {
+    const rows = clientRows(W);
+    rows.forEach(row => {
+      drawClientLabel(ctx, row, alpha);
+      row.prods.forEach((pIdx, ni) => {
+        const nx = row.nStartX + ni * row.gap;
+        drawNode(ctx, nx, row.avY, row.nR, PROD_COLORS[pIdx], null, alpha, alpha * row.nR * 1.8);
+        drawProductIcon(ctx, nx, row.avY, row.nR, pIdx, alpha);
+        // Full product name below node
+        ctx.save();
+        ctx.globalAlpha = clamp(alpha, 0, 1);
+        ctx.fillStyle = PROD_COLORS[pIdx];
+        ctx.font = '10px Inter,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText(PROD_NAMES[pIdx], nx, row.avY + row.nR + 4);
+        ctx.restore();
+        if (ni < row.prods.length - 1) {
+          const nx2 = row.nStartX + (ni + 1) * row.gap;
+          drawArrow(ctx, nx + row.nR + 3, row.avY, nx2 - row.nR - 3, row.avY,
+                    row.color + 'aa', 1, alpha * 0.7);
+        }
+      });
+    });
+  }
+
+  // ── PHASE -1 — Idle ───────────────────────────────────────────────────────
+  function drawIdle(ctx, W, H, t) {
+    clearBg(ctx, W, H);
+
+    // Decorative faint circles with dashed connections
+    const rng = seededRng(77);
+    const pts = [];
+    for (let i = 0; i < 5; i++) {
+      pts.push({ x: 80 + rng() * (W - 160), y: 120 + rng() * (H - 280) });
+    }
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+    ctx.lineWidth   = 1;
+    ctx.setLineDash([5, 8]);
+    for (let i = 0; i < pts.length - 1; i++) {
+      ctx.beginPath();
+      ctx.moveTo(pts[i].x, pts[i].y);
+      ctx.lineTo(pts[i+1].x, pts[i+1].y);
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    pts.forEach(p => {
+      ctx.beginPath(); ctx.arc(p.x, p.y, 14, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.09)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    });
+    ctx.restore();
+
+    // Centered prompt text
+    ctx.save();
+    ctx.fillStyle = C_MUTED;
+    ctx.font = '15px Inter,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText("Clique em 'Executar KDD' para iniciar a demonstração", W / 2, H / 2);
+    ctx.restore();
+  }
+
+  // ── PHASE 0 — Seleção ─────────────────────────────────────────────────────
+  function drawPhase0(ctx, W, H, ms) {
+    clearBg(ctx, W, H);
+    const t = ms / 9000; // 0→1 over 6.2 s
+
+    // Header + subtitle fade in: 0–0.8 s → 0→0.23 in t
+    const hdrA = easeOut(clamp(t / 0.23, 0, 1));
+    drawPhaseHeader(ctx, W, 0, hdrA);
+    drawSubtitle(ctx, W, 'Filtrando transações relevantes da base de 2,4M de registros', hdrA);
+
+    // Large counter: "Base original: 2.4M transações" animates 0→2.4M, fades out when green counter appears
+    if (t > 0) {
+      const cntT   = clamp(t / 0.23, 0, 1);
+      const fadeOut = t > 0.8 ? easeOut(clamp((t - 0.8) / 0.08, 0, 1)) : 0;
+      const baseAlpha = easeOut(cntT) * (1 - fadeOut);
+      if (baseAlpha > 0.01) {
+        const val  = Math.round(easeOut(cntT) * 2400000);
+        const disp = val >= 1000000
+          ? (val / 1000000).toFixed(1) + 'M'
+          : val.toLocaleString('pt-BR');
+        ctx.save();
+        ctx.globalAlpha = baseAlpha;
+        ctx.fillStyle = C_TEXT;
+        ctx.font = 'bold 26px Inter,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText('Base original: ' + disp + ' transações', W / 2, 75);
+        ctx.restore();
+      }
+    }
+
+    // 24 grey dots scatter: 0.8–1.8 s → 0.23→0.51
+    const rng = seededRng(42);
+    const dots = [];
+    for (let i = 0; i < 24; i++) {
+      dots.push({ x: 60 + rng() * (W - 120), y: ZONE_FLOW_TOP + 20 + rng() * (ZONE_FLOW_BOT - ZONE_FLOW_TOP - 60) });
+    }
+    // Which 8 are "relevant" (survive)
+    const survivors = [1, 3, 5, 8, 11, 15, 18, 21];
+    const survivorColors  = [C_SMT, C_CAP, C_PEL, C_CAR, C_SMT, C_CAP, C_PEL, C_CAR];
+    const survivorProdIdx = [0, 1, 2, 3, 0, 1, 2, 3];
+
+    const dotAppearStart = 0.23, dotAppearEnd = 0.51;
+    if (t > dotAppearStart) {
+      const dotT = clamp((t - dotAppearStart) / (dotAppearEnd - dotAppearStart), 0, 1);
+      const shown = Math.floor(dotT * dots.length);
+      for (let i = 0; i < shown; i++) {
+        const d = dots[i];
+        const localA = clamp(dotT * dots.length - i, 0, 1);
+        ctx.save();
+        ctx.globalAlpha = easeOut(localA) * 0.55;
+        ctx.beginPath(); ctx.arc(d.x, d.y, 6, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,0.25)'; ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // Filter sweep + node transformation: 1.8–2.4 s → 0.51→0.69
+    const sweepStart = 0.51, sweepEnd = 0.69;
+    if (t > sweepStart) {
+      const sweepT = clamp((t - sweepStart) / (sweepEnd - sweepStart), 0, 1);
+      const sweepX = easeInOut(sweepT) * W;
+
+      // Glowing sweep line
+      ctx.save();
+      const sg = ctx.createLinearGradient(sweepX - 20, 0, sweepX + 20, 0);
+      sg.addColorStop(0, C_SMT + '00');
+      sg.addColorStop(0.5, C_SMT + 'cc');
+      sg.addColorStop(1, C_SMT + '00');
+      ctx.fillStyle = sg;
+      ctx.fillRect(sweepX - 20, ZONE_FLOW_TOP, 40, ZONE_FLOW_BOT - ZONE_FLOW_TOP);
+      ctx.restore();
+
+      // Dots react to sweep
+      for (let i = 0; i < dots.length; i++) {
+        const d = dots[i];
+        const si = survivors.indexOf(i);
+        const passed = d.x < sweepX;
+        if (!passed) {
+          ctx.save(); ctx.globalAlpha = 0.45;
+          ctx.beginPath(); ctx.arc(d.x, d.y, 6, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255,255,255,0.22)'; ctx.fill();
+          ctx.restore();
+        } else {
+          if (si >= 0) {
+            // survivor: grows
+            const growT = clamp((sweepX - d.x) / 60, 0, 1);
+            const snr = 6 + easeOut(growT) * 10;
+            drawNode(ctx, d.x, d.y, snr, survivorColors[si], null, 1, easeOut(growT) * 22);
+            if (snr >= 10) drawProductIcon(ctx, d.x, d.y, snr, survivorProdIdx[si], 1);
+          } else {
+            // irrelevant: shrinks and fades
+            const fadeT = clamp((sweepX - d.x) / 80, 0, 1);
+            ctx.save(); ctx.globalAlpha = clamp(0.45 - easeOut(fadeT) * 0.4, 0, 1);
+            ctx.beginPath(); ctx.arc(d.x, d.y, Math.max(1, 6 - fadeT * 5), 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fill();
+            ctx.restore();
+          }
+        }
+      }
+    }
+
+    // After sweep: grow survivors to r=22 with labels: 2.4–3.5 s → 0.69→1
+    const growStart = 0.69;
+    if (t > growStart) {
+      const growT = clamp((t - growStart) / (1 - growStart), 0, 1);
+      survivors.forEach((si, idx) => {
+        const d = dots[si];
+        const nodeT = easeOut(clamp(growT * 1.6 - idx * 0.15, 0, 1));
+        const r = lerp(14, 30, nodeT);
+        drawNode(ctx, d.x, d.y, r, survivorColors[idx], null, 1, nodeT * 36);
+        drawProductIcon(ctx, d.x, d.y, r, survivorProdIdx[idx], nodeT);
+      });
+
+      // Green counter: "→ 12.847 registros selecionados"
+      if (growT > 0.5) {
+        const cntA = easeOut(clamp((growT - 0.5) / 0.5, 0, 1));
+        const countVal = Math.round(easeOut(cntA) * 12847);
+        ctx.save();
+        ctx.globalAlpha = cntA;
+        ctx.fillStyle = '#00c97b';
+        ctx.font = 'bold 17px Inter,sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText('→ ' + countVal.toLocaleString('pt-BR') + ' registros selecionados', W / 2, 75);
+        ctx.restore();
+      }
+    }
+
+    // Stats bar
+    const statsA = easeOut(clamp((t - 0.8) / 0.2, 0, 1));
+    drawStatsBar(ctx, W, [
+      { text: '2,4M transações', color: C_MUTED },
+      // { text: '→  filtro aplicado  →', color: 'rgba(255,255,255,0.3)' },
+      { text: '12.847 registros relevantes', color: '#00c97b', bold: true },
+    ], statsA);
+  }
+
+  // ── PHASE 1 — Pré-processamento ───────────────────────────────────────────
+  function drawPhase1(ctx, W, H, ms) {
+    clearBg(ctx, W, H);
+    const t = ms / 9000;
+
+    const hdrA = easeOut(clamp(t / 0.17, 0, 1));
+    drawPhaseHeader(ctx, W, 1, hdrA);
+    drawSubtitle(ctx, W, 'Removendo registros inválidos e corrigindo inconsistências nos dados', hdrA);
+
+    // Build the 8 survivor nodes from phase 0 in stable positions
+    const rng = seededRng(42);
+    const all24 = [];
+    for (let i = 0; i < 24; i++) {
+      all24.push({ x: 60 + rng() * (W - 120), y: ZONE_FLOW_TOP + 20 + rng() * (ZONE_FLOW_BOT - ZONE_FLOW_TOP - 60) });
+    }
+    const survivors  = [1, 3, 5, 8, 11, 15, 18, 21];
+    const sColors   = [C_SMT, C_CAP, C_PEL, C_CAR, C_SMT, C_CAP, C_PEL, C_CAR];
+    const sProdIdx  = [0, 1, 2, 3, 0, 1, 2, 3];
+    const errorIdx   = [2, 5];   // indices into survivors array → flash red & vanish
+    const fixIdx     = [6];      // index into survivors → label fix animation
+    // Timings
+    // 0–0.6 s: title fade → 0→0.17
+    // 0.6–1.2 s: error nodes flash red: 0.17→0.34
+    // 1.2–1.8 s: fix node pulses: 0.34→0.51
+    // 1.8–3.0 s: good nodes pulse green with checkmark: 0.51→0.86
+    // 3.0–3.5 s: stats: 0.86→1
+
+    survivors.forEach((si, idx) => {
+      const d   = all24[si];
+      const isErr = errorIdx.includes(idx);
+      const isFix = fixIdx.includes(idx);
+
+      if (isErr) {
+        // 0.17→0.34: red shake → vanish by 0.40
+        const errT = clamp((t - 0.17) / 0.17, 0, 1);
+        if (t < 0.40) {
+          const shake = Math.sin(errT * Math.PI * 10) * 4 * errT;
+          const pulse = 0.5 + 0.5 * Math.sin(errT * Math.PI * 6);
+          drawNode(ctx, d.x + shake, d.y, 30, '#ff4d6a', null, 1, pulse * 38);
+          // ✗ icon above
+          ctx.save(); ctx.globalAlpha = errT;
+          ctx.fillStyle = '#ff4d6a';
+          ctx.font = 'bold 20px Inter,sans-serif';
+          ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+          ctx.fillText('✗', d.x + shake, d.y - 34);
+          ctx.restore();
+        } else {
+          const vanishA = clamp(1 - (t - 0.40) / 0.12, 0, 1);
+          drawNode(ctx, d.x, d.y, 30, '#ff4d6a', null, vanishA, 0);
+        }
+      } else if (isFix) {
+        // 0.34→0.51: orange pulse, label changes "SMF"→"SMT"
+        const fixT = clamp((t - 0.34) / 0.17, 0, 1);
+        const col  = fixT > 0.5 ? '#00c97b' : '#ff8c42';
+        const pulse = 0.6 + 0.4 * Math.sin(fixT * Math.PI * 5);
+        drawNode(ctx, d.x, d.y, 30, col, null, 1, pulse * 32);
+        if (fixT >= 0.5) drawProductIcon(ctx, d.x, d.y, 30, sProdIdx[idx], clamp((fixT - 0.5) / 0.5, 0, 1));
+        if (fixT > 0.5) {
+          // pencil flash
+          ctx.save(); ctx.globalAlpha = clamp(1 - (fixT - 0.5) / 0.5, 0, 1);
+          ctx.fillStyle = '#ff8c42';
+          ctx.font = '18px Inter,sans-serif';
+          ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+          ctx.fillText('✏', d.x, d.y - 34);
+          ctx.restore();
+        }
+      } else {
+        // Good nodes: appear fully from start, then pulse green one by one
+        const order = [0,1,3,4,7];
+        const pos   = order.indexOf(idx);
+        const pulseDelay = pos >= 0 ? pos * 0.08 : 0;
+        const pulseStart = 0.51 + pulseDelay;
+        const pulseT = clamp((t - pulseStart) / 0.20, 0, 1);
+        const pulse  = pulseT > 0 && pulseT < 1
+          ? 0.5 + 0.5 * Math.sin(pulseT * Math.PI)
+          : 0;
+
+        drawNode(ctx, d.x, d.y, 30, sColors[idx], null, 1, pulse * 34);
+        drawProductIcon(ctx, d.x, d.y, 30, sProdIdx[idx], 1);
+
+        // Checkmark above
+        if (pulseT > 0.3 && pulseT < 0.95) {
+          ctx.save(); ctx.globalAlpha = Math.sin(pulseT * Math.PI);
+          ctx.fillStyle = '#00c97b';
+          ctx.font = 'bold 18px Inter,sans-serif';
+          ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+          ctx.fillText('✓', d.x, d.y - 34);
+          ctx.restore();
+        }
+      }
+    });
+
+    // Stats bar
+    const statsA = easeOut(clamp((t - 0.86) / 0.14, 0, 1));
+    drawStatsBar(ctx, W, [
+      { text: '342 cancelados removidos', color: '#ff4d6a', bold: true },
+      { text: '128 nomes corrigidos', color: '#ff8c42', bold: true },
+      { text: '12.377 registros limpos', color: '#00c97b', bold: true },
+    ], statsA);
+  }
+
+  // ── PHASE 2 — Transformação ───────────────────────────────────────────────
+  function drawPhase2(ctx, W, H, ms) {
+    clearBg(ctx, W, H);
+    const t = ms / 9000;
+
+    const hdrA = easeOut(clamp(t / 0.14, 0, 1));
+    drawPhaseHeader(ctx, W, 2, hdrA);
+    drawSubtitle(ctx, W, 'Organizando compras de cada cliente em sequência temporal', hdrA);
+
+    const rows = clientRows(W);
+    const DATES = [
+      ['02/01','08/01','14/01','22/01'],
+      ['03/01','10/01','18/01'],
+      ['05/01','11/01','17/01','25/01'],
+    ];
+
+    // Row stagger: row 0 starts at 0.14, row 1 at 0.34, row 2 at 0.54
+    const rowStarts = [0.14, 0.34, 0.54];
+
+    // Show which row is currently being built
+    const activeRow = t < rowStarts[1] ? 0 : t < rowStarts[2] ? 1 : 2;
+    const labelA = easeOut(clamp((t - rowStarts[activeRow]) / 0.08, 0, 1));
+    if (labelA > 0) {
+      ctx.save();
+      ctx.globalAlpha = labelA;
+      ctx.fillStyle = rows[activeRow] ? rows[activeRow].color : C_MUTED;
+      ctx.font = 'bold 13px Inter,sans-serif';
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      const r = rows[activeRow];
+      ctx.fillText('Adicionando: ' + (r ? r.name + ' — ' + r.id : ''), W - 20, 75);
+      ctx.restore();
+    }
+
+    rows.forEach((row, ri) => {
+      const rowStart = rowStarts[ri];
+      const rowT = clamp((t - rowStart) / 0.22, 0, 1);
+      if (rowT <= 0) return;
+      const ea  = easeOut(rowT);
+
+      // Client label slides in from left
+      drawClientLabel(ctx, row, ea, lerp(-50, 0, ea));
+
+      // Nodes appear sequentially left-to-right
+      row.prods.forEach((pIdx, ni) => {
+        const nodeT = clamp(rowT * 1.8 - ni * 0.35, 0, 1);
+        if (nodeT <= 0) return;
+        const nea   = easeOut(nodeT);
+        const nx    = row.nStartX + ni * row.gap;
+        const nr2 = row.nR * (0.4 + nea * 0.6);
+        drawNode(ctx, nx, row.avY, nr2, PROD_COLORS[pIdx], null, nea, nea * nr2 * 1.8);
+        if (nea > 0.3) drawProductIcon(ctx, nx, row.avY, nr2, pIdx, nea);
+        // Product name below node
+        ctx.save();
+        ctx.globalAlpha = nea * 0.85;
+        ctx.fillStyle = PROD_COLORS[pIdx];
+        ctx.font = '11px Inter,sans-serif';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        ctx.fillText(PROD_NAMES[pIdx], nx, row.avY + row.nR + 5);
+        ctx.restore();
+
+        // Arrow to next node
+        if (ni < row.prods.length - 1) {
+          const nx2    = row.nStartX + (ni + 1) * row.gap;
+          const arrowT = clamp(nodeT * 1.6 - 0.4, 0, 1);
+          drawArrow(ctx,
+            nx + row.nR + 4, row.avY,
+            nx2 - row.nR - 4, row.avY,
+            row.color + 'aa', arrowT, nea * 0.8);
+        }
+
+        // Date labels: appear at 2.6–3.5 s → 0.74→1
+        if (t > 0.74) {
+          const dateA = easeOut(clamp((t - 0.74) / 0.26, 0, 1));
+          ctx.save();
+          ctx.globalAlpha = dateA * 0.65;
+          ctx.fillStyle = C_MUTED;
+          ctx.font = '11px Inter,sans-serif';
+          ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+          ctx.fillText(DATES[ri][ni], nx, row.avY - row.nR - 6);
+          ctx.restore();
+        }
+      });
+    });
+
+    // "Jornadas formadas" label
+    if (t > 0.76) {
+      const ja = easeOut(clamp((t - 0.76) / 0.24, 0, 1));
+      ctx.save();
+      ctx.globalAlpha = ja;
+      ctx.fillStyle = '#00d4aa';
+      ctx.font = 'bold 14px Inter,sans-serif';
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      ctx.fillText('Jornadas formadas ✓', W - 20, 90);
+      ctx.restore();
+    }
+
+    const statsA = easeOut(clamp((t - 0.82) / 0.18, 0, 1));
+    drawStatsBar(ctx, W, [
+      { text: '3 clientes', color: '#00d4aa', bold: true },
+      { text: 'Transações organizadas em sequência temporal', color: C_MUTED },
+    ], statsA);
+  }
+
+  // ── PHASE 3 — Mineração ───────────────────────────────────────────────────
+  function drawPhase3(ctx, W, H, ms) {
+    clearBg(ctx, W, H);
+    const t = ms / 9000;
+
+    const hdrA = easeOut(clamp(t / 0.13, 0, 1));
+    drawPhaseHeader(ctx, W, 3, hdrA);
+    drawSubtitle(ctx, W, 'Algoritmo varre as sequências em busca de padrões frequentes', hdrA);
+
+    const rows = clientRows(W);
+
+    // All rows appear immediately (already known data)
+    drawClientRowsStatic(ctx, W, 1);
+
+    // Scan beam sweeps top→bottom, then fades out
+    const beamStart = 0.13, beamEnd = 0.39, beamFadeEnd = 0.46;
+    if (t > beamStart && t < beamFadeEnd) {
+      const beamT   = clamp((t - beamStart) / (beamEnd - beamStart), 0, 1);
+      const fadeOut = t > beamEnd ? easeOut(clamp((t - beamEnd) / (beamFadeEnd - beamEnd), 0, 1)) : 0;
+      const beamAlpha = 1 - fadeOut;
+      const beamY   = lerp(ZONE_FLOW_TOP, ZONE_FLOW_BOT, easeInOut(beamT));
+      ctx.save();
+      ctx.globalAlpha = beamAlpha;
+      const bg = ctx.createLinearGradient(0, beamY - 20, 0, beamY + 20);
+      bg.addColorStop(0, C_PEL + '00');
+      bg.addColorStop(0.5, C_PEL + '55');
+      bg.addColorStop(1, C_PEL + '00');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, beamY - 20, W, 40);
+      rows.forEach(row => {
+        const dist = Math.abs(beamY - row.avY);
+        if (dist < 36) {
+          ctx.globalAlpha = beamAlpha * clamp(1 - dist / 36, 0, 0.3);
+          ctx.fillStyle = C_PEL + '33';
+          ctx.fillRect(0, row.avY - 36, W, 72);
+        }
+      });
+      ctx.restore();
+    }
+
+    // Column glow bands (subtle, appear after scan)
+    const colData = [
+      { col: 0, color: C_SMT, label: 'Smartphone', pct: '85% dos clientes', tStart: 0.46, tEnd: 0.58 },
+      { col: 1, color: C_CAP, label: 'Capinha',    pct: '78% dos clientes', tStart: 0.58, tEnd: 0.70 },
+      { col: 2, color: C_PEL, label: 'Película',   pct: '64% dos clientes', tStart: 0.70, tEnd: 0.80 },
+      { col: 3, color: C_CAR, label: 'Carregador', pct: '52% dos clientes', tStart: 0.80, tEnd: 0.88 },
+    ];
+    colData.forEach(cd => {
+      if (t < cd.tStart) return;
+      const colA = easeOut(clamp((t - cd.tStart) / (cd.tEnd - cd.tStart), 0, 1));
+      const nx   = rows[0].nStartX + cd.col * rows[0].gap;
+      const topY = rows[0].avY - rows[0].nR - 10;
+      const botY = rows[rows.length - 1].avY + rows[rows.length - 1].nR + 10;
+      ctx.save();
+      ctx.globalAlpha = colA * 0.35;
+      const cg = ctx.createLinearGradient(nx - 30, 0, nx + 30, 0);
+      cg.addColorStop(0, cd.color + '00');
+      cg.addColorStop(0.5, cd.color + 'ff');
+      cg.addColorStop(1, cd.color + '00');
+      ctx.fillStyle = cg;
+      ctx.fillRect(nx - 30, topY, 60, botY - topY);
+      ctx.restore();
+    });
+
+    // Frequency cards — 2×2 grid, right-aligned, equal gap H and V
+    const panelStart = 0.46;
+    const cardW = 122, cardH = 70, cardGap = 20;
+    const colBCX   = W - 60 - cardW / 2;
+    const colACX   = colBCX - cardW - cardGap;
+    const midFlowY = (ZONE_FLOW_TOP + ZONE_FLOW_BOT) / 2;
+    const rowTopCY = midFlowY - (cardH + cardGap) / 2;
+    const rowBotCY = midFlowY + (cardH + cardGap) / 2;
+    const cardData = [
+      { color: C_SMT, name: 'Smartphone', pct: '85%', cx: colACX, cy: rowTopCY, tStart: 0.46 },
+      { color: C_CAP, name: 'Capinha',    pct: '78%', cx: colACX, cy: rowBotCY, tStart: 0.58 },
+      { color: C_PEL, name: 'Película',   pct: '64%', cx: colBCX, cy: rowTopCY, tStart: 0.70 },
+      { color: C_CAR, name: 'Carregador', pct: '52%', cx: colBCX, cy: rowBotCY, tStart: 0.80 },
+    ];
+    cardData.forEach(card => {
+      if (t < card.tStart) return;
+      const cA = easeOut(clamp((t - card.tStart) / 0.12, 0, 1));
+      ctx.save();
+      ctx.globalAlpha = cA;
+      // Opaque dark background + colored border
+      ctx.fillStyle = '#13111f';
+      ctx.beginPath(); ctx.roundRect(card.cx - cardW/2, card.cy - cardH/2, cardW, cardH, 8); ctx.fill();
+      ctx.fillStyle = card.color + '1a';
+      ctx.beginPath(); ctx.roundRect(card.cx - cardW/2, card.cy - cardH/2, cardW, cardH, 8); ctx.fill();
+      ctx.strokeStyle = card.color + 'cc';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.roundRect(card.cx - cardW/2, card.cy - cardH/2, cardW, cardH, 8); ctx.stroke();
+      // Product name
+      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      ctx.font = 'bold 13px Inter,sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(card.name, card.cx, card.cy - 13);
+      // Big percentage
+      ctx.fillStyle = card.color;
+      ctx.font = 'bold 26px Inter,sans-serif';
+      ctx.fillText(card.pct, card.cx, card.cy + 14);
+      ctx.restore();
+    });
+
+    // Bottom footer panel — appears after scan, shows only pattern text
+    if (t > panelStart) {
+      const panelA = easeOut(clamp((t - panelStart) / 0.12, 0, 1));
+      const panY = ZONE_FLOW_BOT + 4;
+
+      // Panel background
+      ctx.save();
+      ctx.globalAlpha = panelA;
+      ctx.fillStyle = 'rgba(255,255,255,0.025)';
+      ctx.fillRect(0, panY, W, ZONE_STATS_BOT - panY);
+      ctx.strokeStyle = C_BORDER;
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, panY); ctx.lineTo(W, panY); ctx.stroke();
+      ctx.restore();
+
+      // Pattern text centered in footer
+      if (t > panelStart + 0.38) {
+        const patA = easeOut(clamp((t - panelStart - 0.38) / 0.12, 0, 1));
+        const patY = (ZONE_STATS_TOP + ZONE_STATS_BOT) / 2;
+        ctx.save();
+        ctx.globalAlpha = patA;
+        ctx.fillStyle = 'rgba(255,255,255,0.92)';
+        ctx.font = 'bold 15px Inter,sans-serif';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.shadowColor = 'rgba(255,255,255,0.4)'; ctx.shadowBlur = 8;
+        ctx.fillText('★  Padrão descoberto: Smartphone → Capinha → Película → Carregador', W / 2, patY);
+        ctx.shadowBlur = 0;
+        ctx.restore();
+      }
+    }
+  }
+
+  // ── PHASE 4 — Avaliação ───────────────────────────────────────────────────
+  function drawPhase4(ctx, W, H, ms) {
+    clearBg(ctx, W, H);
+    const t = ms / 9000;
+
+    const hdrA = easeOut(clamp(t / 0.13, 0, 1));
+    drawPhaseHeader(ctx, W, 4, hdrA);
+    drawSubtitle(ctx, W, 'Sequência Smartphone → Capinha → Película → Carregador validada pelo time de negócio', hdrA);
+
+    // Dark overlay for drama
+    if (t > 0.13) {
+      const ovA = easeOut(clamp((t - 0.13) / 0.10, 0, 0.45));
+      ctx.save(); ctx.globalAlpha = ovA;
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(0, 52, W, H - 52);
+      ctx.restore();
+    }
+
+    // 4 product nodes center-horizontal: 0.5–1.2 s → 0.13→0.32
+    const nodeR = 46;
+    const totalW = 4 * nodeR * 2 + 3 * 50; // 4 nodes, 3 gaps of 50px
+    const startNX = (W - totalW) / 2 + nodeR;
+    const nodeGap  = nodeR * 2 + 50;
+    const nodeY    = 200;
+
+    const nodeAppearStart = 0.13, nodeAppearEnd = 0.32;
+    if (t > nodeAppearStart) {
+      [0,1,2,3].forEach(ni => {
+        const nodeT = clamp((t - nodeAppearStart - ni * 0.04) / (nodeAppearEnd - nodeAppearStart), 0, 1);
+        if (nodeT <= 0) return;
+        const scale = nodeT < 0.7
+          ? lerp(0, 1.2, nodeT / 0.7)
+          : lerp(1.2, 1.0, (nodeT - 0.7) / 0.3);
+        const nx = startNX + ni * nodeGap;
+        const ea = easeOut(nodeT);
+        drawNode(ctx, nx, nodeY, nodeR * scale, PROD_COLORS[ni], '', ea, ea * 40);
+        drawProductIcon(ctx, nx, nodeY, nodeR * scale, ni, ea * 0.92);
+        // Product name + frequency below node
+        const nodeFreqs = ['85%', '78%', '64%', '52%'];
+        ctx.save();
+        ctx.globalAlpha = ea;
+        ctx.fillStyle = PROD_COLORS[ni];
+        ctx.font = 'bold 14px Inter,sans-serif';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        ctx.fillText(PROD_NAMES[ni], nx, nodeY + nodeR + 10);
+        ctx.font = 'bold 13px Inter,sans-serif';
+        ctx.globalAlpha = ea * 0.85;
+        ctx.fillText(nodeFreqs[ni], nx, nodeY + nodeR + 28);
+        ctx.restore();
+      });
+    }
+
+    // Arrows animate between nodes: 1.2–1.8 s → 0.32→0.47
+    const arrowStart = 0.32, arrowEnd = 0.47;
+    if (t > arrowStart) {
+      [0,1,2].forEach(ni => {
+        const arT  = clamp((t - arrowStart - ni * 0.04) / (arrowEnd - arrowStart), 0, 1);
+        const nx   = startNX + ni * nodeGap;
+        const nx2  = startNX + (ni + 1) * nodeGap;
+        drawArrow(ctx, nx + nodeR + 4, nodeY, nx2 - nodeR - 4, nodeY,
+                  PROD_COLORS[ni], arT, easeOut(arT));
+      });
+    }
+
+    // Probability pill labels on arrows: 1.8–2.4 s → 0.47→0.63
+    const probStart = 0.47, probEnd = 0.63;
+    const probs = ['72%','64%','48%'];
+    const probLabels = ['72% de prob.','64% de prob.','48% de prob.'];
+    if (t > probStart) {
+      const probA = easeOut(clamp((t - probStart) / (probEnd - probStart), 0, 1));
+      [0,1,2].forEach(ni => {
+        const mx  = startNX + ni * nodeGap + nodeGap / 2;
+        const my  = nodeY - nodeR - 18;
+        const col = PROD_COLORS[ni];
+        ctx.save();
+        ctx.globalAlpha = probA;
+        // Small pill on the arrow
+        ctx.font = 'bold 11px Inter,sans-serif';
+        ctx.textAlign = 'center';
+        const tw = ctx.measureText(probLabels[ni]).width + 12;
+        ctx.fillStyle = col + '22';
+        ctx.strokeStyle = col + '88';
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.roundRect(mx - tw/2, my - 9, tw, 18, 4); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = col;
+        ctx.textBaseline = 'middle';
+        ctx.fillText(probLabels[ni], mx, my);
+        ctx.restore();
+      });
+    }
+
+    // "✓ PADRÃO VALIDADO" badge: 2.4–3.0 s → 0.63→0.79
+    if (t > 0.63) {
+      const badgeT = easeOut(clamp((t - 0.63) / 0.16, 0, 1));
+      const bx = W / 2, by = nodeY + nodeR + 112;
+      ctx.save();
+      ctx.globalAlpha = badgeT;
+      ctx.translate(bx, by);
+      ctx.scale(0.6 + badgeT * 0.4, 0.6 + badgeT * 0.4);
+      const bw = 230, bh = 40, br = 10;
+      ctx.fillStyle = 'rgba(0,201,123,0.15)';
+      ctx.strokeStyle = '#00c97b';
+      ctx.lineWidth = 2;
+      ctx.shadowColor = '#00c97b'; ctx.shadowBlur = 14;
+      ctx.beginPath(); ctx.roundRect(-bw/2, -bh/2, bw, bh, br); ctx.fill(); ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#00c97b';
+      ctx.font = 'bold 16px Inter,sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('✓  PADRÃO VALIDADO', 0, 0);
+      ctx.restore();
+    }
+
+    const statsA = easeOut(clamp((t - 0.79) / 0.21, 0, 1));
+    if (statsA > 0) {
+      ctx.save();
+      ctx.globalAlpha = statsA;
+      ctx.fillStyle = 'rgba(255,255,255,0.03)';
+      ctx.fillRect(0, ZONE_STATS_TOP, W, ZONE_STATS_BOT - ZONE_STATS_TOP);
+      ctx.strokeStyle = C_BORDER; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, ZONE_STATS_TOP); ctx.lineTo(W, ZONE_STATS_TOP); ctx.stroke();
+      const col = '#3b82f6';
+      const midY = (ZONE_STATS_TOP + ZONE_STATS_BOT) / 2;
+      ctx.font = 'bold 15px Inter,sans-serif';
+      const label = 'Motor de recomendação ativado';
+      const tw = ctx.measureText(label).width;
+      const iconW = 14, gap = 10;
+      const startX = (W - iconW - gap - tw) / 2;
+      // Vector lightning bolt
+      const ix = startX + iconW / 2, iy = midY, s = 7;
+      ctx.fillStyle = col;
+      ctx.beginPath();
+      ctx.moveTo(ix + s * 0.28, iy - s);
+      ctx.lineTo(ix - s * 0.42, iy + s * 0.08);
+      ctx.lineTo(ix - s * 0.04, iy + s * 0.08);
+      ctx.lineTo(ix - s * 0.28, iy + s);
+      ctx.lineTo(ix + s * 0.42, iy - s * 0.08);
+      ctx.lineTo(ix + s * 0.04, iy - s * 0.08);
+      ctx.closePath();
+      ctx.fill();
+      ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+      ctx.fillText(label, startX + iconW + gap, midY);
+      ctx.restore();
+    }
+  }
+
+  // ── Dispatcher ────────────────────────────────────────────────────────────
+  window.drawKDDPhase = function(phaseIndex) {
+    const canvas = getCanvas();
+    if (!canvas) return;
+
+    // Cancel any running animation
+    if (_rafId) { cancelAnimationFrame(_rafId); _rafId = null; }
+
+    _phase = phaseIndex;
+    const ctx = initCanvas(canvas);
+    const W   = canvasW(canvas);
+    const H   = canvasH(canvas);
+
+    // Phase label is drawn directly on the canvas — hide the HTML overlay
+    const labelEl = document.getElementById('kddCanvasLabel');
+    if (labelEl) labelEl.style.display = 'none';
+
+    if (phaseIndex < 0) {
+      drawIdle(ctx, W, H, 0);
+      return;
+    }
+
+    const drawFns = [drawPhase0, drawPhase1, drawPhase2, drawPhase3, drawPhase4];
+    const fn = drawFns[phaseIndex];
+    if (!fn) return;
+
+    const ANIM_DUR = 9000; // ms — matches each phase's internal timeline
+    const start    = performance.now();
+
+    function tick(now) {
+      const ms  = now - start;
+      const ctx2 = canvas.getContext('2d');
+      const dpr  = window.devicePixelRatio || 1;
+      ctx2.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const W2 = canvasW(canvas), H2 = canvasH(canvas);
+      fn(ctx2, W2, H2, Math.min(ms, ANIM_DUR));
+      _rafId = requestAnimationFrame(tick);
+    }
+    _rafId = requestAnimationFrame(tick);
+  };
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  window.addEventListener('DOMContentLoaded', () => {
+    const canvas = getCanvas();
+    if (!canvas) return;
+    const ctx = initCanvas(canvas);
+    drawIdle(ctx, canvasW(canvas), canvasH(canvas), 0);
+
+    window.addEventListener('resize', () => {
+      const canvas2 = getCanvas();
+      if (!canvas2) return;
+      const ctx2 = initCanvas(canvas2);
+      if (_phase < 0) {
+        drawIdle(ctx2, canvasW(canvas2), canvasH(canvas2), 0);
+      }
+    });
+  });
+})();
 
 // ---- HERO PARALLAX (subtle) ----
 function setupHeroParallax(){
