@@ -120,9 +120,9 @@ section:first-of-type{padding-top:0}
 
 /* ---- DADOS ---- */
 .data-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2.5rem}
-.dtag{padding:.5rem 1rem;border-radius:var(--radius-sm);font-size:.9rem;font-weight:500;background:var(--surface);border:1px solid var(--glass-border);display:flex;align-items:center;gap:.4rem;color:var(--text-muted);cursor:default;transition:all .25s var(--ease)}
-.dtag:hover{border-color:rgba(109,92,255,.3);color:var(--text);background:var(--surface-hover);transform:translateY(-1px)}
-.dtag svg{width:14px;height:14px;opacity:.6;transition:opacity .2s}
+.dtag{padding:.5rem 1rem;border-radius:var(--radius-sm);font-size:.9rem;font-weight:500;border:1px solid transparent;display:flex;align-items:center;gap:.4rem;cursor:default;transition:all .25s var(--ease)}
+.dtag:hover{transform:translateY(-2px);filter:brightness(1.15)}
+.dtag svg{width:14px;height:14px;opacity:.8;transition:opacity .2s}
 .dtag:hover svg{opacity:1}
 
 .clients-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:1.2rem}
@@ -210,7 +210,7 @@ section:first-of-type{padding-top:0}
 
 /* ---- DISCOVERY ---- */
 .disc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
-.disc-card{padding:1.5rem 1.2rem;text-align:center;position:relative}
+.disc-card{padding:1.5rem 1.2rem;text-align:center;position:relative;display:flex;flex-direction:column}
 .disc-card:not(:last-child)::after{content:'';position:absolute;top:50%;right:calc(-1rem);width:1rem;height:2px;z-index:2;opacity:.35;transition:opacity .3s}
 .disc-card:hover::after{opacity:.7}
 .disc-card:nth-child(1)::after{background:var(--accent)}.disc-card:nth-child(1):hover{border-color:rgba(109,92,255,.3);box-shadow:0 8px 30px rgba(109,92,255,.08)}
@@ -229,7 +229,7 @@ section:first-of-type{padding-top:0}
 .disc-card:nth-child(4) .disc-icon-wrap{background:rgba(255,140,66,.1);border:1px solid rgba(255,140,66,.2)}
 .disc-name{font-size:1.05rem;font-weight:700;margin-bottom:.3rem}
 .disc-role{font-size:.9rem;color:var(--text-muted);line-height:1.55;margin-bottom:.6rem}
-.disc-prob{font-size:.82rem;font-weight:650;padding:.25rem .7rem;border-radius:5px;display:inline-block;margin-bottom:.6rem}
+.disc-prob{font-size:.82rem;font-weight:650;padding:.25rem .7rem;border-radius:5px;display:inline-block;margin-top:auto;margin-bottom:.6rem}
 /* Probability bar */
 .disc-bar-track{width:80%;height:4px;border-radius:2px;background:rgba(255,255,255,.06);margin:0 auto;overflow:hidden}
 .disc-bar-fill{height:100%;border-radius:2px;width:0;transition:width 1.2s var(--ease)}
@@ -241,7 +241,7 @@ section:first-of-type{padding-top:0}
 
 /* ---- ACTIONS ---- */
 .actions-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem}
-.act-card{padding:1.5rem;display:flex;gap:1.2rem;align-items:start}
+.act-card{padding:1.5rem;display:flex;gap:1.2rem;align-items:start;align-self:stretch}
 .act-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
 .act-card:hover .act-icon{transform:scale(1.08)}
 .act-card:nth-child(1) .act-icon{background:rgba(109,92,255,.1);border:1px solid rgba(109,92,255,.2)}
@@ -256,9 +256,10 @@ section:first-of-type{padding-top:0}
 .act-card:nth-child(4) .act-icon{background:rgba(255,140,66,.1);border:1px solid rgba(255,140,66,.2)}
 .act-card:nth-child(4):hover{border-color:rgba(255,140,66,.25);box-shadow:0 8px 30px rgba(255,140,66,.06)}
 .act-card:nth-child(4):hover .act-icon{box-shadow:0 0 18px rgba(255,140,66,.2),0 0 36px rgba(255,140,66,.08)}
+.act-body{display:flex;flex-direction:column;flex:1;min-width:0;align-self:stretch}
 .act-body h3{font-size:1.02rem;font-weight:650;margin-bottom:.3rem}
 .act-body p{font-size:.92rem;color:var(--text-muted);line-height:1.65}
-.act-example{margin-top:.6rem;padding:.65rem .9rem;border-radius:var(--radius-sm);background:rgba(255,255,255,.02);border:1px solid var(--glass-border);font-size:.88rem;color:var(--text-muted);line-height:1.65;transition:border-color .25s}
+.act-example{margin-top:auto;padding:.65rem .9rem;border-radius:var(--radius-sm);background:rgba(255,255,255,.02);border:1px solid var(--glass-border);font-size:.88rem;color:var(--text-muted);line-height:1.65;transition:border-color .25s}
 .act-card:hover .act-example{border-color:rgba(255,255,255,.12)}
 .act-example strong{color:var(--cyan)}
 
@@ -514,7 +515,7 @@ section:first-of-type{padding-top:0}
 <script>
 const ICO={
   smartphone:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6d5cff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg>`,
-  case:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00d4aa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/><rect x="3" y="3" width="18" height="18" rx="3" stroke-opacity=".3"/></svg>`,
+  case:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00d4aa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="1" width="18" height="22" rx="4"/><rect x="6" y="4" width="12" height="14" rx="1" stroke-opacity=".45"/><line x1="10" y1="20" x2="14" y2="20"/></svg>`,
   film:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff5ca1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="1"/><line x1="6" y1="8" x2="18" y2="8" stroke-dasharray="2 2"/></svg>`,
   battery:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff8c42" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="18" height="12" rx="2"/><line x1="23" y1="10" x2="23" y2="14"/><line x1="7" y1="10" x2="7" y2="14"/><line x1="11" y1="10" x2="11" y2="14"/></svg>`,
   target:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6d5cff" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
@@ -543,7 +544,16 @@ const CLIENTS=[
   {id:'2048',name:'Carlos Mendes',initials:'CM',avatar:'https://i.pravatar.cc/150?img=12',events:[{date:'04/01',product:'Smartphone',value:'R$ 3.199',color:'#6d5cff'},{date:'06/01',product:'Capinha',value:'R$ 59',color:'#00d4aa'},{date:'09/01',product:'Película',value:'R$ 45',color:'#ff5ca1'}]},
   {id:'3099',name:'Julia Rocha',initials:'JR',avatar:'https://i.pravatar.cc/150?img=9',events:[{date:'05/01',product:'Smartphone',value:'R$ 1.899',color:'#6d5cff'},{date:'12/01',product:'Capinha',value:'R$ 89',color:'#00d4aa'},{date:'14/01',product:'Película',value:'R$ 35',color:'#ff5ca1'},{date:'22/01',product:'Carregador Portátil',value:'R$ 129',color:'#ff8c42'}]}
 ];
-const DATA_FIELDS=['Histórico de compras','ID do cliente','Produto comprado','Categoria','Data e hora','Canal de venda','Valor','Frequência de recompra'];
+const DATA_FIELDS=[
+  {label:'Histórico de compras', color:'#6d5cff'},
+  {label:'ID do cliente',        color:'#00d4aa'},
+  {label:'Produto comprado',     color:'#ff5ca1'},
+  {label:'Categoria',            color:'#ff8c42'},
+  {label:'Data e hora',          color:'#3b82f6'},
+  {label:'Canal de venda',       color:'#00c97b'},
+  {label:'Valor',                color:'#f0b429'},
+  {label:'Frequência de recompra', color:'#c084fc'},
+];
 
 const KDD_STEPS=[
   {phase:'selecao',label:'Seleção',title:'1. Seleção dos Dados',desc:'O e-commerce possui milhões de registros. Selecionamos apenas transações de smartphones e acessórios dos últimos 6 meses, focando em clientes com pelo menos 2 compras na categoria.',icon:ICO.db,
@@ -623,7 +633,15 @@ const SIMULATIONS=[
     {title:'Padrão encontrado',desc:'Último item: Carregador Portátil, com 48% de probabilidade.',color:'#00d4aa',hl:'Próximo produto: Carregador Portátil — 48% de probabilidade',tag:'Match'},
     {title:'Regra ativada',desc:'Campanha de cross-sell premium com carregadores e acessórios de autonomia.',color:'#ff8c42',hl:null,tag:'Trigger'},
     {title:'Ação executada',desc:'Push + e-mail com bundle "Complete sua experiência" enviados.',color:'#6d5cff',hl:null,tag:'Output'}
-   ],result:{next:'Carregador Portátil',prob:'48%',probColor:'#ff8c42',action:'Campanha de carregadores e acessórios premium',impact:'Retenção e recompra'}}
+   ],result:{next:'Carregador Portátil',prob:'48%',probColor:'#ff8c42',action:'Campanha de carregadores e acessórios premium',impact:'Retenção e recompra'}},
+  {label:'Carregador Portátil',dot:'#ff8c42',progressColor:'linear-gradient(180deg,#ff8c42,#3b82f6,#6d5cff,#ff5ca1,#00d4aa)',
+   steps:[
+    {title:'Evento detectado',desc:'Cliente #1024 comprou Carregador Portátil por R$ 149 via App.',color:'#ff8c42',hl:null,tag:'Input'},
+    {title:'Consulta ao modelo',desc:'Sistema identifica sequência completa: Smartphone → Capinha → Película → Carregador Portátil.',color:'#3b82f6',hl:null,tag:'Análise'},
+    {title:'Padrão encontrado',desc:'Jornada de acessórios concluída. Cliente classificado como perfil de alto valor — 4 compras na categoria.',color:'#6d5cff',hl:'Sequência completa — cliente de alto valor identificado',tag:'Match'},
+    {title:'Regra ativada',desc:'Programa de fidelidade acionado + nova sequência iniciada na categoria "Áudio e Wearables".',color:'#ff5ca1',hl:null,tag:'Trigger'},
+    {title:'Ação executada',desc:'E-mail de fidelização + recomendação de fones e smartwatches compatíveis enviados.',color:'#00d4aa',hl:null,tag:'Output'}
+   ],result:{next:'Fidelização',prob:'Alto LTV',probColor:'#ff8c42',action:'Programa de fidelidade + nova categoria',impact:'Retenção e aumento de LTV'}}
 ];
 
 const KPIS=[
@@ -650,7 +668,7 @@ function renderCaso(){
 }
 
 function renderDataTags(){
-  document.getElementById('dataTags').innerHTML=DATA_FIELDS.map(f=>`<span class="dtag">${ICO.cart} ${f}</span>`).join('');
+  document.getElementById('dataTags').innerHTML=DATA_FIELDS.map(f=>`<span class="dtag" style="background:${f.color}18;border-color:${f.color}40;color:${f.color}">${ICO.cart} ${f.label}</span>`).join('');
 }
 
 function renderClients(){
