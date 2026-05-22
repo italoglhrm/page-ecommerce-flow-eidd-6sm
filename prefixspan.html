@@ -17,7 +17,7 @@
   --radius:14px;--radius-sm:8px;--ease:cubic-bezier(.4,0,.2,1);
 }
 html{scroll-behavior:smooth}
-body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:22px;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}
 .scroll-progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--cyan),var(--pink));z-index:200;width:0}
 .container{max-width:1100px;margin:0 auto;padding:0 1.5rem}
@@ -169,6 +169,13 @@ section{padding:6rem 0}
 /* ── STEP 7: Tree ── */
 .tree-wrap{position:relative;width:100%;background:rgba(255,255,255,.012);border:1px solid var(--glass-border);border-radius:var(--radius);overflow:hidden}
 .tree-canvas{display:block;width:100%;height:360px}
+.tree-phase-nav{display:flex;align-items:center;justify-content:center;gap:1.2rem;padding:.75rem 1.2rem;border-top:1px solid var(--glass-border)}
+.tree-nav-btn{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--glass-border);background:var(--surface);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.tree-nav-btn:hover:not(:disabled){border-color:rgba(109,92,255,.5);background:rgba(109,92,255,.08);color:var(--accent2)}
+.tree-nav-btn:disabled{opacity:.25;cursor:not-allowed}
+.tree-phase-info{text-align:center;min-width:200px}
+.tree-phase-label{font-size:.78rem;color:var(--text-dim);font-weight:600;text-transform:uppercase;letter-spacing:1px;display:block}
+.tree-phase-name{font-size:.9rem;color:var(--text);font-weight:600;display:block;margin-top:.1rem}
 .tree-legend{display:flex;gap:1.2rem;padding:.8rem 1.2rem;border-top:1px solid var(--glass-border);flex-wrap:wrap}
 .tree-legend-item{display:flex;align-items:center;gap:.4rem;font-size:.8rem;color:var(--text-muted)}
 .legend-line{width:20px;height:2px;border-radius:1px}
@@ -457,6 +464,32 @@ const STEPS = [
 
 let current = 0;
 let treeAnimated = false;
+let treePhase = 1;
+let treeRedrawFn = null;
+let treeState = null;
+
+function advanceTree(dir) {
+  const next = treePhase + dir;
+  if (next < 1 || next > 4) return;
+  const from = treePhase;
+  treePhase = next;
+  updateTreeNav();
+  if (treeState) {
+    if (dir > 0) treeState.animateTransition(from, next);
+    else treeState.redraw(next);
+  }
+}
+
+function updateTreeNav() {
+  const prev = document.getElementById('treePrevBtn');
+  const next = document.getElementById('treeNextBtn');
+  const label = document.getElementById('treePhaseLabel');
+  const name  = document.getElementById('treePhaseName');
+  if (prev)  prev.disabled  = treePhase <= 1;
+  if (next)  next.disabled  = treePhase >= 4;
+  if (label) label.textContent = `Fase ${treePhase} de 4`;
+  if (name)  name.textContent  = TREE_PHASE_NAMES[treePhase - 1];
+}
 
 // ── STEP RENDERS ──────────────────────────────────────────────────────────
 function renderStep1() {
@@ -665,8 +698,16 @@ function renderStep6() {
     </div>`;
 }
 
+const TREE_PHASE_NAMES = [
+  'Raiz — Smartphone',
+  'Nível 1 — primeiras extensões',
+  'Nível 2 — pares de prefixos',
+  'Nível 3 — padrão completo',
+];
+
 function renderStep7() {
   treeAnimated = false;
+  treePhase = 1;
   setTimeout(() => {
     const canvas = document.getElementById('treeCanvas');
     if (canvas) animateTree(canvas);
@@ -675,6 +716,18 @@ function renderStep7() {
   return `
     <div class="tree-wrap">
       <canvas class="tree-canvas" id="treeCanvas"></canvas>
+      <div class="tree-phase-nav">
+        <button class="tree-nav-btn" id="treePrevBtn" onclick="advanceTree(-1)" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="tree-phase-info">
+          <span class="tree-phase-label" id="treePhaseLabel">Fase 1 de 4</span>
+          <span class="tree-phase-name" id="treePhaseName">${TREE_PHASE_NAMES[0]}</span>
+        </div>
+        <button class="tree-nav-btn" id="treeNextBtn" onclick="advanceTree(1)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
       <div class="tree-legend">
         <div class="tree-legend-item"><div class="legend-line" style="background:#6d5cff;height:3px"></div>Caminho principal (SM→CA→PE→CR)</div>
         <div class="tree-legend-item"><div class="legend-line" style="background:rgba(255,255,255,.2)"></div>Ramos secundários</div>
@@ -867,12 +920,12 @@ function animateTree(canvas) {
     ctx.shadowBlur = 0;
     // label
     ctx.fillStyle = col;
-    ctx.font = `600 11px Inter,sans-serif`;
+    ctx.font = `600 15px Inter,sans-serif`;
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(n.label, nx(n), n.y - 6);
+    ctx.fillText(n.label, nx(n), n.y - 7);
     // sup badge
     ctx.fillStyle = 'rgba(255,255,255,.45)';
-    ctx.font = `500 10px Inter,sans-serif`;
+    ctx.font = `500 13px Inter,sans-serif`;
     ctx.fillText(`sup: ${n.sup}`, nx(n), n.y + 9);
     ctx.restore();
   }
@@ -895,17 +948,84 @@ function animateTree(canvas) {
 
   function redraw(phase) {
     ctx.clearRect(0, 0, W, H);
+    // Only draw an edge when BOTH its endpoints are already visible
     edges.forEach(e => {
       const fn = nodes.find(n=>n.id===e.f), tn = nodes.find(n=>n.id===e.t);
-      if (fn.level < phase && tn.level <= phase) drawEdge(e, 1);
+      if (fn.level < phase && tn.level < phase) drawEdge(e, 1);
     });
     nodes.forEach(n => { if (n.level < phase) drawNode(n, 1); });
   }
 
-  // Animate level by level
-  [1,2,3,4].forEach((phase, i) => {
-    setTimeout(() => redraw(phase), i * 900);
-  });
+  let animGen = 0;
+
+  function bezierXY(t, x0, y0, cy, x3, y3) {
+    return {
+      x: x0*Math.pow(1-t,2)*(1+2*t) + x3*t*t*(3-2*t),
+      y: Math.pow(1-t,3)*y0 + 3*(1-t)*t*cy + t*t*t*y3,
+    };
+  }
+
+  function drawEdgeBlue(e, progress) {
+    const fn = nodes.find(n=>n.id===e.f), tn = nodes.find(n=>n.id===e.t);
+    const x0 = nx(fn), y0 = fn.y + NH/2;
+    const x3 = nx(tn), y3 = tn.y - NH/2;
+    const cy = (y0 + y3) / 2;
+    const steps = 48;
+    ctx.save();
+    ctx.shadowColor = '#3b82f6'; ctx.shadowBlur = 18;
+    ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2.6;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    for (let i = 0; i <= Math.ceil(steps * progress); i++) {
+      const p = bezierXY(i / steps, x0, y0, cy, x3, y3);
+      if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function animateTransition(fromPhase, toPhase) {
+    const gen = ++animGen;
+    const newLevel = toPhase - 1;
+    // Only the single golden-path edge arriving at this level
+    const goldEdge = edges.find(e => e.gold && nodes.find(n=>n.id===e.t).level === newLevel);
+    const newNodes = nodes.filter(n => n.level === newLevel);
+    const DURATION = 750;
+    const start = performance.now();
+
+    function frame(now) {
+      if (gen !== animGen) return;
+      const prog = Math.min((now - start) / DURATION, 1);
+
+      ctx.clearRect(0, 0, W, H);
+
+      // Stable base: only edges where both endpoints were visible in fromPhase
+      edges.forEach(e => {
+        const fn = nodes.find(n=>n.id===e.f), tn = nodes.find(n=>n.id===e.t);
+        if (fn.level < fromPhase && tn.level < fromPhase) drawEdge(e, 1);
+      });
+      nodes.forEach(n => { if (n.level < fromPhase) drawNode(n, 1); });
+
+      // Animate only the golden edge in blue (finishes at 65% of duration)
+      if (goldEdge) {
+        const edgeProg = Math.min(prog / 0.65, 1);
+        drawEdgeBlue(goldEdge, edgeProg);
+      }
+
+      // Fade in ALL new nodes at this level (start at 55%)
+      const nodeAlpha = Math.max(0, (prog - 0.55) / 0.45);
+      if (nodeAlpha > 0) newNodes.forEach(n => drawNode(n, nodeAlpha));
+
+      if (prog < 1) requestAnimationFrame(frame);
+      else redraw(toPhase);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  treeState = { animateTransition, redraw };
+  treeRedrawFn = redraw;
+  redraw(treePhase);
+  updateTreeNav();
 }
 
 // ── RESULTS TABLE ──────────────────────────────────────────────────────────
