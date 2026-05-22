@@ -902,45 +902,58 @@ function animateTree(canvas) {
 
   function nx(n) { return n.xf * W; }
 
-  function drawNode(n, alpha) {
+  const GOLD_IDS = ['SM','SM_CA','SM_CA_PE','SM_CA_PE_CR'];
+
+  function drawNode(n, alpha, dim) {
     const x = nx(n) - NW/2, y = n.y - NH/2;
-    const col = P[n.code].hex;
     ctx.save(); ctx.globalAlpha = alpha;
-    // glow for golden path
-    const isGold = ['SM','SM_CA','SM_CA_PE','SM_CA_PE_CR'].includes(n.id);
-    if (isGold) {
-      ctx.shadowColor = col; ctx.shadowBlur = 14;
+    if (dim) {
+      ctx.beginPath(); ctx.roundRect(x, y, NW, NH, NR);
+      ctx.fillStyle = 'rgba(255,255,255,.03)'; ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,.12)'; ctx.lineWidth = 1; ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,.25)';
+      ctx.font = `500 15px Inter,sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(n.label, nx(n), n.y - 7);
+      ctx.fillStyle = 'rgba(255,255,255,.15)';
+      ctx.font = `400 13px Inter,sans-serif`;
+      ctx.fillText(`sup: ${n.sup}`, nx(n), n.y + 9);
+    } else {
+      const col = P[n.code].hex;
+      const isGold = GOLD_IDS.includes(n.id);
+      if (isGold) { ctx.shadowColor = col; ctx.shadowBlur = 14; }
+      ctx.beginPath(); ctx.roundRect(x, y, NW, NH, NR);
+      ctx.fillStyle = col+'22'; ctx.fill();
+      ctx.strokeStyle = isGold ? col : col+'80';
+      ctx.lineWidth = isGold ? 1.8 : 1; ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = col;
+      ctx.font = `600 15px Inter,sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(n.label, nx(n), n.y - 7);
+      ctx.fillStyle = 'rgba(255,255,255,.45)';
+      ctx.font = `500 13px Inter,sans-serif`;
+      ctx.fillText(`sup: ${n.sup}`, nx(n), n.y + 9);
     }
-    ctx.beginPath();
-    ctx.roundRect(x, y, NW, NH, NR);
-    ctx.fillStyle = col+'22'; ctx.fill();
-    ctx.strokeStyle = isGold ? col : col+'80';
-    ctx.lineWidth = isGold ? 1.8 : 1;
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-    // label
-    ctx.fillStyle = col;
-    ctx.font = `600 15px Inter,sans-serif`;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(n.label, nx(n), n.y - 7);
-    // sup badge
-    ctx.fillStyle = 'rgba(255,255,255,.45)';
-    ctx.font = `500 13px Inter,sans-serif`;
-    ctx.fillText(`sup: ${n.sup}`, nx(n), n.y + 9);
     ctx.restore();
   }
 
-  function drawEdge(e, alpha) {
+  function drawEdge(e, alpha, dim) {
     const fn = nodes.find(n=>n.id===e.f), tn = nodes.find(n=>n.id===e.t);
     ctx.save(); ctx.globalAlpha = alpha;
     ctx.beginPath();
     ctx.moveTo(nx(fn), fn.y + NH/2);
-    // cubic bezier
     const cy = (fn.y + NH/2 + tn.y - NH/2) / 2;
     ctx.bezierCurveTo(nx(fn), cy, nx(tn), cy, nx(tn), tn.y - NH/2);
-    ctx.strokeStyle = e.gold ? '#6d5cff' : 'rgba(255,255,255,.15)';
-    ctx.lineWidth = e.gold ? 1.8 : 1;
-    if (!e.gold) ctx.setLineDash([4,4]);
+    if (dim) {
+      ctx.strokeStyle = 'rgba(255,255,255,.08)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3,6]);
+    } else {
+      ctx.strokeStyle = e.gold ? '#6d5cff' : 'rgba(255,255,255,.15)';
+      ctx.lineWidth = e.gold ? 2 : 1;
+      if (!e.gold) ctx.setLineDash([4,4]);
+    }
     ctx.stroke();
     ctx.setLineDash([]);
     ctx.restore();
@@ -948,12 +961,20 @@ function animateTree(canvas) {
 
   function redraw(phase) {
     ctx.clearRect(0, 0, W, H);
-    // Only draw an edge when BOTH its endpoints are already visible
+    // 1. All edges dim
+    edges.forEach(e => drawEdge(e, 1, true));
+    // 2. All nodes dim
+    nodes.forEach(n => drawNode(n, 1, true));
+    // 3. Gold edges highlighted (both endpoints are lit)
     edges.forEach(e => {
+      if (!e.gold) return;
       const fn = nodes.find(n=>n.id===e.f), tn = nodes.find(n=>n.id===e.t);
-      if (fn.level < phase && tn.level < phase) drawEdge(e, 1);
+      if (fn.level < phase && tn.level < phase) drawEdge(e, 1, false);
     });
-    nodes.forEach(n => { if (n.level < phase) drawNode(n, 1); });
+    // 4. Gold nodes highlighted
+    nodes.forEach(n => {
+      if (GOLD_IDS.includes(n.id) && n.level < phase) drawNode(n, 1, false);
+    });
   }
 
   let animGen = 0;
@@ -987,34 +1008,44 @@ function animateTree(canvas) {
   function animateTransition(fromPhase, toPhase) {
     const gen = ++animGen;
     const newLevel = toPhase - 1;
-    // Only the single golden-path edge arriving at this level
-    const goldEdge = edges.find(e => e.gold && nodes.find(n=>n.id===e.t).level === newLevel);
-    const newNodes = nodes.filter(n => n.level === newLevel);
-    const DURATION = 750;
+    const goldEdge   = edges.find(e => e.gold && nodes.find(n=>n.id===e.t).level === newLevel);
+    const newGoldNode = nodes.find(n => n.id === GOLD_IDS[newLevel]);
+    const DURATION = 780;
     const start = performance.now();
+
+    function drawBase(phase) {
+      // 1. all dim edges
+      edges.forEach(e => drawEdge(e, 1, true));
+      // 2. all dim nodes
+      nodes.forEach(n => drawNode(n, 1, true));
+      // 3. gold edges lit for this phase
+      edges.forEach(e => {
+        if (!e.gold) return;
+        const fn = nodes.find(n=>n.id===e.f), tn = nodes.find(n=>n.id===e.t);
+        if (fn.level < phase && tn.level < phase) drawEdge(e, 1, false);
+      });
+      // 4. gold nodes lit for this phase
+      nodes.forEach(n => {
+        if (GOLD_IDS.includes(n.id) && n.level < phase) drawNode(n, 1, false);
+      });
+    }
 
     function frame(now) {
       if (gen !== animGen) return;
       const prog = Math.min((now - start) / DURATION, 1);
 
       ctx.clearRect(0, 0, W, H);
+      drawBase(fromPhase);
 
-      // Stable base: only edges where both endpoints were visible in fromPhase
-      edges.forEach(e => {
-        const fn = nodes.find(n=>n.id===e.f), tn = nodes.find(n=>n.id===e.t);
-        if (fn.level < fromPhase && tn.level < fromPhase) drawEdge(e, 1);
-      });
-      nodes.forEach(n => { if (n.level < fromPhase) drawNode(n, 1); });
-
-      // Animate only the golden edge in blue (finishes at 65% of duration)
+      // Animate gold edge in blue (completes at 65%)
       if (goldEdge) {
-        const edgeProg = Math.min(prog / 0.65, 1);
-        drawEdgeBlue(goldEdge, edgeProg);
+        const ep = Math.min(prog / 0.65, 1);
+        drawEdgeBlue(goldEdge, ep);
       }
 
-      // Fade in ALL new nodes at this level (start at 55%)
-      const nodeAlpha = Math.max(0, (prog - 0.55) / 0.45);
-      if (nodeAlpha > 0) newNodes.forEach(n => drawNode(n, nodeAlpha));
+      // Fade in new gold node (starts at 50%)
+      const nodeAlpha = Math.max(0, (prog - 0.50) / 0.50);
+      if (nodeAlpha > 0 && newGoldNode) drawNode(newGoldNode, nodeAlpha, false);
 
       if (prog < 1) requestAnimationFrame(frame);
       else redraw(toPhase);
